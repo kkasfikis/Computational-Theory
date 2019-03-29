@@ -1,0 +1,4620 @@
+State 55 conflicts: 1 shift/reduce
+
+
+Grammar
+
+    0 $accept: program $end
+
+    1 program: program_decl program_function_procedure_start_contents complex_commands DEL_DOT
+
+    2 program_decl: KW_PROGRAM IDENT DEL_SEMICOLON
+
+    3 program_function_procedure_start_contents: %empty
+    4                                          | program_function_procedure_start_contents variable_declaration
+    5                                          | program_function_procedure_start_contents typedef_declaration
+    6                                          | program_function_procedure_start_contents function
+    7                                          | program_function_procedure_start_contents procedure
+
+    8 function: function_header function_procedure_start_contents function_complex_commands DEL_SEMICOLON
+
+    9 function_procedure_start_contents: %empty
+   10                                  | function_procedure_start_contents variable_declaration
+   11                                  | function_procedure_start_contents function
+   12                                  | function_procedure_start_contents procedure
+
+   13 function_header: KW_FUNCTION IDENT DEL_LEFTPAR function_procedure_param DEL_RIGHTPAR DEL_COLON data_types DEL_SEMICOLON
+
+   14 procedure: procedure_header function_procedure_start_contents complex_commands DEL_SEMICOLON
+
+   15 procedure_header: KW_PROCEDURE IDENT DEL_LEFTPAR function_procedure_param DEL_RIGHTPAR DEL_SEMICOLON
+
+   16 function_procedure_param: %empty
+   17                         | IDENT DEL_COLON basic_data_types
+   18                         | IDENT DEL_COLON KW_ARRAY array_size_declaration KW_OF basic_data_types
+   19                         | IDENT DEL_COLON KW_ARRAY KW_OF basic_data_types
+   20                         | IDENT DEL_COLON IDENT
+   21                         | function_procedure_param DEL_SEMICOLON IDENT DEL_COLON basic_data_types
+   22                         | function_procedure_param DEL_SEMICOLON IDENT DEL_COLON KW_ARRAY array_size_declaration KW_OF basic_data_types
+   23                         | function_procedure_param DEL_SEMICOLON IDENT DEL_COLON KW_ARRAY KW_OF basic_data_types
+   24                         | function_procedure_param DEL_SEMICOLON IDENT DEL_COLON IDENT
+
+   25 function_procedure_call: IDENT DEL_LEFTPAR function_procedure_call_params DEL_RIGHTPAR
+
+   26 function_procedure_call_params: %empty
+   27                               | expressions
+   28                               | function_procedure_call_params DEL_COMMA expressions
+
+   29 basic_data_types: KW_INTEGER
+   30                 | KW_BOOL
+   31                 | KW_CHAR
+   32                 | KW_REAL
+
+   33 data_types: basic_data_types
+   34           | KW_ARRAY KW_OF basic_data_types
+
+   35 array_size_declaration: DEL_SQRLEFT POSINT DEL_SQRRIGHT
+   36                       | array_size_declaration DEL_SQRLEFT POSINT DEL_SQRRIGHT
+
+   37 typedef_declaration: KW_TYPE
+   38                    | typedef_declaration IDENT CMP_EQUAL basic_data_types DEL_SEMICOLON
+   39                    | typedef_declaration IDENT CMP_EQUAL KW_FUNCTION DEL_LEFTPAR function_procedure_param DEL_RIGHTPAR DEL_COLON basic_data_types DEL_SEMICOLON
+   40                    | typedef_declaration IDENT CMP_EQUAL KW_ARRAY array_size_declaration KW_OF basic_data_types DEL_SEMICOLON
+   41                    | typedef_declaration IDENT CMP_EQUAL KW_ARRAY KW_OF basic_data_types DEL_SEMICOLON
+
+   42 variable_declaration: KW_VAR
+   43                     | variable_declaration single_plural_ident DEL_COLON basic_data_types DEL_SEMICOLON
+   44                     | variable_declaration single_plural_ident DEL_COLON IDENT DEL_SEMICOLON
+   45                     | variable_declaration single_plural_ident DEL_COLON KW_ARRAY array_size_declaration KW_OF basic_data_types DEL_SEMICOLON
+   46                     | variable_declaration single_plural_ident DEL_COLON KW_ARRAY KW_OF basic_data_types DEL_SEMICOLON
+
+   47 single_plural_ident: single_plural_ident DEL_COMMA IDENT
+   48                    | IDENT
+
+   49 read_string: FUNC_RDSTR DEL_LEFTPAR DEL_RIGHTPAR
+
+   50 read_integer: FUNC_RDINT DEL_LEFTPAR DEL_RIGHTPAR
+
+   51 read_real: FUNC_RDREAL DEL_LEFTPAR DEL_RIGHTPAR
+
+   52 write_string: FUNC_WRSTR DEL_LEFTPAR IDENT DEL_RIGHTPAR
+   53             | FUNC_WRSTR DEL_LEFTPAR STRING DEL_RIGHTPAR
+   54             | FUNC_WRSTR DEL_LEFTPAR KW_RESULT DEL_RIGHTPAR
+
+   55 write_integer: FUNC_WRINT DEL_LEFTPAR expressions DEL_RIGHTPAR
+   56              | FUNC_WRINT DEL_LEFTPAR KW_RESULT DEL_RIGHTPAR
+
+   57 write_real: FUNC_WRREAL DEL_LEFTPAR expressions DEL_RIGHTPAR
+   58           | FUNC_WRREAL DEL_LEFTPAR KW_RESULT DEL_RIGHTPAR
+
+   59 expressions: IDENT
+   60            | POSINT
+   61            | REAL
+   62            | STRING
+   63            | BOOL_TRUE
+   64            | BOOL_FALSE
+   65            | read_string
+   66            | read_integer
+   67            | read_real
+   68            | array_expression
+   69            | function_procedure_call
+   70            | KW_NOT expressions
+   71            | LOG_NOT expressions
+   72            | OP_PLUS expressions
+   73            | OP_MINUS expressions
+   74            | casting expressions
+   75            | expressions OP_MULT expressions
+   76            | expressions OP_DIV expressions
+   77            | expressions KW_DIV expressions
+   78            | expressions KW_MOD expressions
+   79            | expressions OP_PLUS expressions
+   80            | expressions OP_MINUS expressions
+   81            | expressions CMP_EQUAL expressions
+   82            | expressions CMP_NOTEQUAL expressions
+   83            | expressions CMP_LESS expressions
+   84            | expressions CMP_LESSEQUAL expressions
+   85            | expressions CMP_GREATER expressions
+   86            | expressions CMP_GREATEREQUAL expressions
+   87            | expressions KW_AND expressions
+   88            | expressions LOG_AND expressions
+   89            | expressions KW_OR expressions
+   90            | expressions LOG_OR expressions
+   91            | DEL_LEFTPAR expressions DEL_RIGHTPAR
+
+   92 complex_command_content: %empty
+   93                        | complex_command_content distinct_commands
+   94                        | complex_command_content DEL_SEMICOLON distinct_commands
+
+   95 complex_commands: KW_BEGIN complex_command_content KW_END
+
+   96 function_complex_commands: KW_BEGIN complex_command_content DEL_SEMICOLON KW_RETURN KW_END
+
+   97 distinct_commands: assignment_command
+   98                  | result_command
+   99                  | if_command
+  100                  | for_command
+  101                  | while_command
+  102                  | repeat_command
+  103                  | label_command
+  104                  | goto_command
+  105                  | return_command
+  106                  | function_procedure_call
+  107                  | read_string
+  108                  | read_integer
+  109                  | read_real
+  110                  | write_string
+  111                  | write_integer
+  112                  | write_real
+
+  113 statement_commands_contents: distinct_commands
+  114                            | complex_commands
+
+  115 assignment_command: IDENT ASSIGNMENT expressions
+  116                   | IDENT array_sqr_content ASSIGNMENT expressions
+
+  117 result_command: KW_RESULT ASSIGNMENT expressions
+
+  118 if_command: KW_IF expressions KW_THEN statement_commands_contents
+  119           | if_command KW_ELSE statement_commands_contents
+
+  120 for_command: KW_FOR IDENT ASSIGNMENT expressions KW_TO expressions KW_DO statement_commands_contents
+  121            | KW_FOR IDENT ASSIGNMENT expressions KW_DOWNTO expressions KW_DO statement_commands_contents
+
+  122 while_command: KW_WHILE expressions KW_DO statement_commands_contents
+
+  123 repeat_command: KW_REPEAT statement_commands_contents KW_UNTIL expressions
+
+  124 label_command: IDENT DEL_COLON statement_commands_contents
+
+  125 goto_command: KW_GOTO IDENT
+
+  126 return_command: KW_RETURN
+
+  127 array_expression: IDENT array_sqr_content
+
+  128 array_sqr_content: DEL_SQRLEFT expressions DEL_SQRRIGHT
+  129                  | array_sqr_content DEL_SQRLEFT expressions DEL_SQRRIGHT
+
+  130 casting: DEL_LEFTPAR data_types DEL_RIGHTPAR
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+IDENT (258) 2 13 15 17 18 19 20 21 22 23 24 25 38 39 40 41 44 47 48
+    52 59 115 116 120 121 124 125 127
+POSINT (259) 35 36 60
+REAL (260) 61
+STRING (261) 53 62
+KW_PROGRAM (262) 2
+KW_BEGIN (263) 95 96
+KW_END (264) 95 96
+KW_AND (265) 87
+KW_ARRAY (266) 18 19 22 23 34 40 41 45 46
+KW_BOOL (267) 30
+KW_CHAR (268) 31
+KW_TYPE (269) 37
+KW_DIV (270) 77
+KW_DO (271) 120 121 122
+KW_FOR (272) 120 121
+KW_FUNCTION (273) 13 39
+KW_GOTO (274) 125
+KW_IF (275) 118
+KW_INTEGER (276) 29
+KW_VAR (277) 42
+KW_MOD (278) 78
+KW_NOT (279) 70
+KW_OF (280) 18 19 22 23 34 40 41 45 46
+KW_OR (281) 89
+KW_WHILE (282) 122
+KW_PROCEDURE (283) 15
+KW_REAL (284) 32
+KW_REPEAT (285) 123
+KW_TO (286) 120
+KW_RESULT (287) 54 56 58 117
+KW_RETURN (288) 96 126
+KW_THEN (289) 118
+KW_ELSE (290) 119
+KW_UNTIL (291) 123
+KW_DOWNTO (292) 121
+OP_PLUS (293) 72 79
+OP_MINUS (294) 73 80
+OP_MULT (295) 75
+OP_DIV (296) 76
+CMP_EQUAL (297) 38 39 40 41 81
+CMP_NOTEQUAL (298) 82
+CMP_LESS (299) 83
+CMP_LESSEQUAL (300) 84
+CMP_GREATER (301) 85
+CMP_GREATEREQUAL (302) 86
+LOG_AND (303) 88
+LOG_NOT (304) 71
+LOG_OR (305) 90
+ASSIGNMENT (306) 115 116 117 120 121
+DEL_SEMICOLON (307) 2 8 13 14 15 21 22 23 24 38 39 40 41 43 44 45 46
+    94 96
+DEL_LEFTPAR (308) 13 15 25 39 49 50 51 52 53 54 55 56 57 58 91 130
+DEL_RIGHTPAR (309) 13 15 25 39 49 50 51 52 53 54 55 56 57 58 91 130
+DEL_COMMA (310) 28 47
+DEL_SQRLEFT (311) 35 36 128 129
+DEL_SQRRIGHT (312) 35 36 128 129
+DEL_COLON (313) 13 17 18 19 20 21 22 23 24 39 43 44 45 46 124
+DEL_DOT (314) 1
+FUNC_RDSTR (315) 49
+FUNC_RDINT (316) 50
+FUNC_RDREAL (317) 51
+FUNC_WRSTR (318) 52 53 54
+FUNC_WRINT (319) 55 56
+FUNC_WRREAL (320) 57 58
+BOOL_TRUE (321) 63
+BOOL_FALSE (322) 64
+NOT (323)
+UPLUS_UMINUS (324)
+CAST (325)
+FACTORS (326)
+PLUS_MINUS (327)
+RELATIONAL (328)
+LOGICAL_AND (329)
+LOGICAL_OR (330)
+PAR (331)
+
+
+Nonterminals, with rules where they appear
+
+$accept (77)
+    on left: 0
+program (78)
+    on left: 1, on right: 0
+program_decl (79)
+    on left: 2, on right: 1
+program_function_procedure_start_contents (80)
+    on left: 3 4 5 6 7, on right: 1 4 5 6 7
+function (81)
+    on left: 8, on right: 6 11
+function_procedure_start_contents (82)
+    on left: 9 10 11 12, on right: 8 10 11 12 14
+function_header (83)
+    on left: 13, on right: 8
+procedure (84)
+    on left: 14, on right: 7 12
+procedure_header (85)
+    on left: 15, on right: 14
+function_procedure_param (86)
+    on left: 16 17 18 19 20 21 22 23 24, on right: 13 15 21 22 23 24
+    39
+function_procedure_call (87)
+    on left: 25, on right: 69 106
+function_procedure_call_params (88)
+    on left: 26 27 28, on right: 25 28
+basic_data_types (89)
+    on left: 29 30 31 32, on right: 17 18 19 21 22 23 33 34 38 39 40
+    41 43 45 46
+data_types (90)
+    on left: 33 34, on right: 13 130
+array_size_declaration (91)
+    on left: 35 36, on right: 18 22 36 40 45
+typedef_declaration (92)
+    on left: 37 38 39 40 41, on right: 5 38 39 40 41
+variable_declaration (93)
+    on left: 42 43 44 45 46, on right: 4 10 43 44 45 46
+single_plural_ident (94)
+    on left: 47 48, on right: 43 44 45 46 47
+read_string (95)
+    on left: 49, on right: 65 107
+read_integer (96)
+    on left: 50, on right: 66 108
+read_real (97)
+    on left: 51, on right: 67 109
+write_string (98)
+    on left: 52 53 54, on right: 110
+write_integer (99)
+    on left: 55 56, on right: 111
+write_real (100)
+    on left: 57 58, on right: 112
+expressions (101)
+    on left: 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76
+    77 78 79 80 81 82 83 84 85 86 87 88 89 90 91, on right: 27 28 55
+    57 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89
+    90 91 115 116 117 118 120 121 122 123 128 129
+complex_command_content (102)
+    on left: 92 93 94, on right: 93 94 95 96
+complex_commands (103)
+    on left: 95, on right: 1 14 114
+function_complex_commands (104)
+    on left: 96, on right: 8
+distinct_commands (105)
+    on left: 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111
+    112, on right: 93 94 113
+statement_commands_contents (106)
+    on left: 113 114, on right: 118 119 120 121 122 123 124
+assignment_command (107)
+    on left: 115 116, on right: 97
+result_command (108)
+    on left: 117, on right: 98
+if_command (109)
+    on left: 118 119, on right: 99 119
+for_command (110)
+    on left: 120 121, on right: 100
+while_command (111)
+    on left: 122, on right: 101
+repeat_command (112)
+    on left: 123, on right: 102
+label_command (113)
+    on left: 124, on right: 103
+goto_command (114)
+    on left: 125, on right: 104
+return_command (115)
+    on left: 126, on right: 105
+array_expression (116)
+    on left: 127, on right: 68
+array_sqr_content (117)
+    on left: 128 129, on right: 116 127 129
+casting (118)
+    on left: 130, on right: 74
+
+
+State 0
+
+    0 $accept: . program $end
+
+    KW_PROGRAM  shift, and go to state 1
+
+    program       go to state 2
+    program_decl  go to state 3
+
+
+State 1
+
+    2 program_decl: KW_PROGRAM . IDENT DEL_SEMICOLON
+
+    IDENT  shift, and go to state 4
+
+
+State 2
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 5
+
+
+State 3
+
+    1 program: program_decl . program_function_procedure_start_contents complex_commands DEL_DOT
+
+    $default  reduce using rule 3 (program_function_procedure_start_contents)
+
+    program_function_procedure_start_contents  go to state 6
+
+
+State 4
+
+    2 program_decl: KW_PROGRAM IDENT . DEL_SEMICOLON
+
+    DEL_SEMICOLON  shift, and go to state 7
+
+
+State 5
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+State 6
+
+    1 program: program_decl program_function_procedure_start_contents . complex_commands DEL_DOT
+    4 program_function_procedure_start_contents: program_function_procedure_start_contents . variable_declaration
+    5                                          | program_function_procedure_start_contents . typedef_declaration
+    6                                          | program_function_procedure_start_contents . function
+    7                                          | program_function_procedure_start_contents . procedure
+
+    KW_BEGIN      shift, and go to state 8
+    KW_TYPE       shift, and go to state 9
+    KW_FUNCTION   shift, and go to state 10
+    KW_VAR        shift, and go to state 11
+    KW_PROCEDURE  shift, and go to state 12
+
+    function              go to state 13
+    function_header       go to state 14
+    procedure             go to state 15
+    procedure_header      go to state 16
+    typedef_declaration   go to state 17
+    variable_declaration  go to state 18
+    complex_commands      go to state 19
+
+
+State 7
+
+    2 program_decl: KW_PROGRAM IDENT DEL_SEMICOLON .
+
+    $default  reduce using rule 2 (program_decl)
+
+
+State 8
+
+   95 complex_commands: KW_BEGIN . complex_command_content KW_END
+
+    $default  reduce using rule 92 (complex_command_content)
+
+    complex_command_content  go to state 20
+
+
+State 9
+
+   37 typedef_declaration: KW_TYPE .
+
+    $default  reduce using rule 37 (typedef_declaration)
+
+
+State 10
+
+   13 function_header: KW_FUNCTION . IDENT DEL_LEFTPAR function_procedure_param DEL_RIGHTPAR DEL_COLON data_types DEL_SEMICOLON
+
+    IDENT  shift, and go to state 21
+
+
+State 11
+
+   42 variable_declaration: KW_VAR .
+
+    $default  reduce using rule 42 (variable_declaration)
+
+
+State 12
+
+   15 procedure_header: KW_PROCEDURE . IDENT DEL_LEFTPAR function_procedure_param DEL_RIGHTPAR DEL_SEMICOLON
+
+    IDENT  shift, and go to state 22
+
+
+State 13
+
+    6 program_function_procedure_start_contents: program_function_procedure_start_contents function .
+
+    $default  reduce using rule 6 (program_function_procedure_start_contents)
+
+
+State 14
+
+    8 function: function_header . function_procedure_start_contents function_complex_commands DEL_SEMICOLON
+
+    $default  reduce using rule 9 (function_procedure_start_contents)
+
+    function_procedure_start_contents  go to state 23
+
+
+State 15
+
+    7 program_function_procedure_start_contents: program_function_procedure_start_contents procedure .
+
+    $default  reduce using rule 7 (program_function_procedure_start_contents)
+
+
+State 16
+
+   14 procedure: procedure_header . function_procedure_start_contents complex_commands DEL_SEMICOLON
+
+    $default  reduce using rule 9 (function_procedure_start_contents)
+
+    function_procedure_start_contents  go to state 24
+
+
+State 17
+
+    5 program_function_procedure_start_contents: program_function_procedure_start_contents typedef_declaration .
+   38 typedef_declaration: typedef_declaration . IDENT CMP_EQUAL basic_data_types DEL_SEMICOLON
+   39                    | typedef_declaration . IDENT CMP_EQUAL KW_FUNCTION DEL_LEFTPAR function_procedure_param DEL_RIGHTPAR DEL_COLON basic_data_types DEL_SEMICOLON
+   40                    | typedef_declaration . IDENT CMP_EQUAL KW_ARRAY array_size_declaration KW_OF basic_data_types DEL_SEMICOLON
+   41                    | typedef_declaration . IDENT CMP_EQUAL KW_ARRAY KW_OF basic_data_types DEL_SEMICOLON
+
+    IDENT  shift, and go to state 25
+
+    $default  reduce using rule 5 (program_function_procedure_start_contents)
+
+
+State 18
+
+    4 program_function_procedure_start_contents: program_function_procedure_start_contents variable_declaration .
+   43 variable_declaration: variable_declaration . single_plural_ident DEL_COLON basic_data_types DEL_SEMICOLON
+   44                     | variable_declaration . single_plural_ident DEL_COLON IDENT DEL_SEMICOLON
+   45                     | variable_declaration . single_plural_ident DEL_COLON KW_ARRAY array_size_declaration KW_OF basic_data_types DEL_SEMICOLON
+   46                     | variable_declaration . single_plural_ident DEL_COLON KW_ARRAY KW_OF basic_data_types DEL_SEMICOLON
+
+    IDENT  shift, and go to state 26
+
+    $default  reduce using rule 4 (program_function_procedure_start_contents)
+
+    single_plural_ident  go to state 27
+
+
+State 19
+
+    1 program: program_decl program_function_procedure_start_contents complex_commands . DEL_DOT
+
+    DEL_DOT  shift, and go to state 28
+
+
+State 20
+
+   93 complex_command_content: complex_command_content . distinct_commands
+   94                        | complex_command_content . DEL_SEMICOLON distinct_commands
+   95 complex_commands: KW_BEGIN complex_command_content . KW_END
+
+    IDENT          shift, and go to state 29
+    KW_END         shift, and go to state 30
+    KW_FOR         shift, and go to state 31
+    KW_GOTO        shift, and go to state 32
+    KW_IF          shift, and go to state 33
+    KW_WHILE       shift, and go to state 34
+    KW_REPEAT      shift, and go to state 35
+    KW_RESULT      shift, and go to state 36
+    KW_RETURN      shift, and go to state 37
+    DEL_SEMICOLON  shift, and go to state 38
+    FUNC_RDSTR     shift, and go to state 39
+    FUNC_RDINT     shift, and go to state 40
+    FUNC_RDREAL    shift, and go to state 41
+    FUNC_WRSTR     shift, and go to state 42
+    FUNC_WRINT     shift, and go to state 43
+    FUNC_WRREAL    shift, and go to state 44
+
+    function_procedure_call  go to state 45
+    read_string              go to state 46
+    read_integer             go to state 47
+    read_real                go to state 48
+    write_string             go to state 49
+    write_integer            go to state 50
+    write_real               go to state 51
+    distinct_commands        go to state 52
+    assignment_command       go to state 53
+    result_command           go to state 54
+    if_command               go to state 55
+    for_command              go to state 56
+    while_command            go to state 57
+    repeat_command           go to state 58
+    label_command            go to state 59
+    goto_command             go to state 60
+    return_command           go to state 61
+
+
+State 21
+
+   13 function_header: KW_FUNCTION IDENT . DEL_LEFTPAR function_procedure_param DEL_RIGHTPAR DEL_COLON data_types DEL_SEMICOLON
+
+    DEL_LEFTPAR  shift, and go to state 62
+
+
+State 22
+
+   15 procedure_header: KW_PROCEDURE IDENT . DEL_LEFTPAR function_procedure_param DEL_RIGHTPAR DEL_SEMICOLON
+
+    DEL_LEFTPAR  shift, and go to state 63
+
+
+State 23
+
+    8 function: function_header function_procedure_start_contents . function_complex_commands DEL_SEMICOLON
+   10 function_procedure_start_contents: function_procedure_start_contents . variable_declaration
+   11                                  | function_procedure_start_contents . function
+   12                                  | function_procedure_start_contents . procedure
+
+    KW_BEGIN      shift, and go to state 64
+    KW_FUNCTION   shift, and go to state 10
+    KW_VAR        shift, and go to state 11
+    KW_PROCEDURE  shift, and go to state 12
+
+    function                   go to state 65
+    function_header            go to state 14
+    procedure                  go to state 66
+    procedure_header           go to state 16
+    variable_declaration       go to state 67
+    function_complex_commands  go to state 68
+
+
+State 24
+
+   10 function_procedure_start_contents: function_procedure_start_contents . variable_declaration
+   11                                  | function_procedure_start_contents . function
+   12                                  | function_procedure_start_contents . procedure
+   14 procedure: procedure_header function_procedure_start_contents . complex_commands DEL_SEMICOLON
+
+    KW_BEGIN      shift, and go to state 8
+    KW_FUNCTION   shift, and go to state 10
+    KW_VAR        shift, and go to state 11
+    KW_PROCEDURE  shift, and go to state 12
+
+    function              go to state 65
+    function_header       go to state 14
+    procedure             go to state 66
+    procedure_header      go to state 16
+    variable_declaration  go to state 67
+    complex_commands      go to state 69
+
+
+State 25
+
+   38 typedef_declaration: typedef_declaration IDENT . CMP_EQUAL basic_data_types DEL_SEMICOLON
+   39                    | typedef_declaration IDENT . CMP_EQUAL KW_FUNCTION DEL_LEFTPAR function_procedure_param DEL_RIGHTPAR DEL_COLON basic_data_types DEL_SEMICOLON
+   40                    | typedef_declaration IDENT . CMP_EQUAL KW_ARRAY array_size_declaration KW_OF basic_data_types DEL_SEMICOLON
+   41                    | typedef_declaration IDENT . CMP_EQUAL KW_ARRAY KW_OF basic_data_types DEL_SEMICOLON
+
+    CMP_EQUAL  shift, and go to state 70
+
+
+State 26
+
+   48 single_plural_ident: IDENT .
+
+    $default  reduce using rule 48 (single_plural_ident)
+
+
+State 27
+
+   43 variable_declaration: variable_declaration single_plural_ident . DEL_COLON basic_data_types DEL_SEMICOLON
+   44                     | variable_declaration single_plural_ident . DEL_COLON IDENT DEL_SEMICOLON
+   45                     | variable_declaration single_plural_ident . DEL_COLON KW_ARRAY array_size_declaration KW_OF basic_data_types DEL_SEMICOLON
+   46                     | variable_declaration single_plural_ident . DEL_COLON KW_ARRAY KW_OF basic_data_types DEL_SEMICOLON
+   47 single_plural_ident: single_plural_ident . DEL_COMMA IDENT
+
+    DEL_COMMA  shift, and go to state 71
+    DEL_COLON  shift, and go to state 72
+
+
+State 28
+
+    1 program: program_decl program_function_procedure_start_contents complex_commands DEL_DOT .
+
+    $default  reduce using rule 1 (program)
+
+
+State 29
+
+   25 function_procedure_call: IDENT . DEL_LEFTPAR function_procedure_call_params DEL_RIGHTPAR
+  115 assignment_command: IDENT . ASSIGNMENT expressions
+  116                   | IDENT . array_sqr_content ASSIGNMENT expressions
+  124 label_command: IDENT . DEL_COLON statement_commands_contents
+
+    ASSIGNMENT   shift, and go to state 73
+    DEL_LEFTPAR  shift, and go to state 74
+    DEL_SQRLEFT  shift, and go to state 75
+    DEL_COLON    shift, and go to state 76
+
+    array_sqr_content  go to state 77
+
+
+State 30
+
+   95 complex_commands: KW_BEGIN complex_command_content KW_END .
+
+    $default  reduce using rule 95 (complex_commands)
+
+
+State 31
+
+  120 for_command: KW_FOR . IDENT ASSIGNMENT expressions KW_TO expressions KW_DO statement_commands_contents
+  121            | KW_FOR . IDENT ASSIGNMENT expressions KW_DOWNTO expressions KW_DO statement_commands_contents
+
+    IDENT  shift, and go to state 78
+
+
+State 32
+
+  125 goto_command: KW_GOTO . IDENT
+
+    IDENT  shift, and go to state 79
+
+
+State 33
+
+  118 if_command: KW_IF . expressions KW_THEN statement_commands_contents
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 95
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 34
+
+  122 while_command: KW_WHILE . expressions KW_DO statement_commands_contents
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 98
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 35
+
+  123 repeat_command: KW_REPEAT . statement_commands_contents KW_UNTIL expressions
+
+    IDENT        shift, and go to state 29
+    KW_BEGIN     shift, and go to state 8
+    KW_FOR       shift, and go to state 31
+    KW_GOTO      shift, and go to state 32
+    KW_IF        shift, and go to state 33
+    KW_WHILE     shift, and go to state 34
+    KW_REPEAT    shift, and go to state 35
+    KW_RESULT    shift, and go to state 36
+    KW_RETURN    shift, and go to state 37
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    FUNC_WRSTR   shift, and go to state 42
+    FUNC_WRINT   shift, and go to state 43
+    FUNC_WRREAL  shift, and go to state 44
+
+    function_procedure_call      go to state 45
+    read_string                  go to state 46
+    read_integer                 go to state 47
+    read_real                    go to state 48
+    write_string                 go to state 49
+    write_integer                go to state 50
+    write_real                   go to state 51
+    complex_commands             go to state 99
+    distinct_commands            go to state 100
+    statement_commands_contents  go to state 101
+    assignment_command           go to state 53
+    result_command               go to state 54
+    if_command                   go to state 55
+    for_command                  go to state 56
+    while_command                go to state 57
+    repeat_command               go to state 58
+    label_command                go to state 59
+    goto_command                 go to state 60
+    return_command               go to state 61
+
+
+State 36
+
+  117 result_command: KW_RESULT . ASSIGNMENT expressions
+
+    ASSIGNMENT  shift, and go to state 102
+
+
+State 37
+
+  126 return_command: KW_RETURN .
+
+    $default  reduce using rule 126 (return_command)
+
+
+State 38
+
+   94 complex_command_content: complex_command_content DEL_SEMICOLON . distinct_commands
+
+    IDENT        shift, and go to state 29
+    KW_FOR       shift, and go to state 31
+    KW_GOTO      shift, and go to state 32
+    KW_IF        shift, and go to state 33
+    KW_WHILE     shift, and go to state 34
+    KW_REPEAT    shift, and go to state 35
+    KW_RESULT    shift, and go to state 36
+    KW_RETURN    shift, and go to state 37
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    FUNC_WRSTR   shift, and go to state 42
+    FUNC_WRINT   shift, and go to state 43
+    FUNC_WRREAL  shift, and go to state 44
+
+    function_procedure_call  go to state 45
+    read_string              go to state 46
+    read_integer             go to state 47
+    read_real                go to state 48
+    write_string             go to state 49
+    write_integer            go to state 50
+    write_real               go to state 51
+    distinct_commands        go to state 103
+    assignment_command       go to state 53
+    result_command           go to state 54
+    if_command               go to state 55
+    for_command              go to state 56
+    while_command            go to state 57
+    repeat_command           go to state 58
+    label_command            go to state 59
+    goto_command             go to state 60
+    return_command           go to state 61
+
+
+State 39
+
+   49 read_string: FUNC_RDSTR . DEL_LEFTPAR DEL_RIGHTPAR
+
+    DEL_LEFTPAR  shift, and go to state 104
+
+
+State 40
+
+   50 read_integer: FUNC_RDINT . DEL_LEFTPAR DEL_RIGHTPAR
+
+    DEL_LEFTPAR  shift, and go to state 105
+
+
+State 41
+
+   51 read_real: FUNC_RDREAL . DEL_LEFTPAR DEL_RIGHTPAR
+
+    DEL_LEFTPAR  shift, and go to state 106
+
+
+State 42
+
+   52 write_string: FUNC_WRSTR . DEL_LEFTPAR IDENT DEL_RIGHTPAR
+   53             | FUNC_WRSTR . DEL_LEFTPAR STRING DEL_RIGHTPAR
+   54             | FUNC_WRSTR . DEL_LEFTPAR KW_RESULT DEL_RIGHTPAR
+
+    DEL_LEFTPAR  shift, and go to state 107
+
+
+State 43
+
+   55 write_integer: FUNC_WRINT . DEL_LEFTPAR expressions DEL_RIGHTPAR
+   56              | FUNC_WRINT . DEL_LEFTPAR KW_RESULT DEL_RIGHTPAR
+
+    DEL_LEFTPAR  shift, and go to state 108
+
+
+State 44
+
+   57 write_real: FUNC_WRREAL . DEL_LEFTPAR expressions DEL_RIGHTPAR
+   58           | FUNC_WRREAL . DEL_LEFTPAR KW_RESULT DEL_RIGHTPAR
+
+    DEL_LEFTPAR  shift, and go to state 109
+
+
+State 45
+
+  106 distinct_commands: function_procedure_call .
+
+    $default  reduce using rule 106 (distinct_commands)
+
+
+State 46
+
+  107 distinct_commands: read_string .
+
+    $default  reduce using rule 107 (distinct_commands)
+
+
+State 47
+
+  108 distinct_commands: read_integer .
+
+    $default  reduce using rule 108 (distinct_commands)
+
+
+State 48
+
+  109 distinct_commands: read_real .
+
+    $default  reduce using rule 109 (distinct_commands)
+
+
+State 49
+
+  110 distinct_commands: write_string .
+
+    $default  reduce using rule 110 (distinct_commands)
+
+
+State 50
+
+  111 distinct_commands: write_integer .
+
+    $default  reduce using rule 111 (distinct_commands)
+
+
+State 51
+
+  112 distinct_commands: write_real .
+
+    $default  reduce using rule 112 (distinct_commands)
+
+
+State 52
+
+   93 complex_command_content: complex_command_content distinct_commands .
+
+    $default  reduce using rule 93 (complex_command_content)
+
+
+State 53
+
+   97 distinct_commands: assignment_command .
+
+    $default  reduce using rule 97 (distinct_commands)
+
+
+State 54
+
+   98 distinct_commands: result_command .
+
+    $default  reduce using rule 98 (distinct_commands)
+
+
+State 55
+
+   99 distinct_commands: if_command .
+  119 if_command: if_command . KW_ELSE statement_commands_contents
+
+    KW_ELSE  shift, and go to state 110
+
+    KW_ELSE   [reduce using rule 99 (distinct_commands)]
+    $default  reduce using rule 99 (distinct_commands)
+
+
+State 56
+
+  100 distinct_commands: for_command .
+
+    $default  reduce using rule 100 (distinct_commands)
+
+
+State 57
+
+  101 distinct_commands: while_command .
+
+    $default  reduce using rule 101 (distinct_commands)
+
+
+State 58
+
+  102 distinct_commands: repeat_command .
+
+    $default  reduce using rule 102 (distinct_commands)
+
+
+State 59
+
+  103 distinct_commands: label_command .
+
+    $default  reduce using rule 103 (distinct_commands)
+
+
+State 60
+
+  104 distinct_commands: goto_command .
+
+    $default  reduce using rule 104 (distinct_commands)
+
+
+State 61
+
+  105 distinct_commands: return_command .
+
+    $default  reduce using rule 105 (distinct_commands)
+
+
+State 62
+
+   13 function_header: KW_FUNCTION IDENT DEL_LEFTPAR . function_procedure_param DEL_RIGHTPAR DEL_COLON data_types DEL_SEMICOLON
+
+    IDENT  shift, and go to state 111
+
+    $default  reduce using rule 16 (function_procedure_param)
+
+    function_procedure_param  go to state 112
+
+
+State 63
+
+   15 procedure_header: KW_PROCEDURE IDENT DEL_LEFTPAR . function_procedure_param DEL_RIGHTPAR DEL_SEMICOLON
+
+    IDENT  shift, and go to state 111
+
+    $default  reduce using rule 16 (function_procedure_param)
+
+    function_procedure_param  go to state 113
+
+
+State 64
+
+   96 function_complex_commands: KW_BEGIN . complex_command_content DEL_SEMICOLON KW_RETURN KW_END
+
+    $default  reduce using rule 92 (complex_command_content)
+
+    complex_command_content  go to state 114
+
+
+State 65
+
+   11 function_procedure_start_contents: function_procedure_start_contents function .
+
+    $default  reduce using rule 11 (function_procedure_start_contents)
+
+
+State 66
+
+   12 function_procedure_start_contents: function_procedure_start_contents procedure .
+
+    $default  reduce using rule 12 (function_procedure_start_contents)
+
+
+State 67
+
+   10 function_procedure_start_contents: function_procedure_start_contents variable_declaration .
+   43 variable_declaration: variable_declaration . single_plural_ident DEL_COLON basic_data_types DEL_SEMICOLON
+   44                     | variable_declaration . single_plural_ident DEL_COLON IDENT DEL_SEMICOLON
+   45                     | variable_declaration . single_plural_ident DEL_COLON KW_ARRAY array_size_declaration KW_OF basic_data_types DEL_SEMICOLON
+   46                     | variable_declaration . single_plural_ident DEL_COLON KW_ARRAY KW_OF basic_data_types DEL_SEMICOLON
+
+    IDENT  shift, and go to state 26
+
+    $default  reduce using rule 10 (function_procedure_start_contents)
+
+    single_plural_ident  go to state 27
+
+
+State 68
+
+    8 function: function_header function_procedure_start_contents function_complex_commands . DEL_SEMICOLON
+
+    DEL_SEMICOLON  shift, and go to state 115
+
+
+State 69
+
+   14 procedure: procedure_header function_procedure_start_contents complex_commands . DEL_SEMICOLON
+
+    DEL_SEMICOLON  shift, and go to state 116
+
+
+State 70
+
+   38 typedef_declaration: typedef_declaration IDENT CMP_EQUAL . basic_data_types DEL_SEMICOLON
+   39                    | typedef_declaration IDENT CMP_EQUAL . KW_FUNCTION DEL_LEFTPAR function_procedure_param DEL_RIGHTPAR DEL_COLON basic_data_types DEL_SEMICOLON
+   40                    | typedef_declaration IDENT CMP_EQUAL . KW_ARRAY array_size_declaration KW_OF basic_data_types DEL_SEMICOLON
+   41                    | typedef_declaration IDENT CMP_EQUAL . KW_ARRAY KW_OF basic_data_types DEL_SEMICOLON
+
+    KW_ARRAY     shift, and go to state 117
+    KW_BOOL      shift, and go to state 118
+    KW_CHAR      shift, and go to state 119
+    KW_FUNCTION  shift, and go to state 120
+    KW_INTEGER   shift, and go to state 121
+    KW_REAL      shift, and go to state 122
+
+    basic_data_types  go to state 123
+
+
+State 71
+
+   47 single_plural_ident: single_plural_ident DEL_COMMA . IDENT
+
+    IDENT  shift, and go to state 124
+
+
+State 72
+
+   43 variable_declaration: variable_declaration single_plural_ident DEL_COLON . basic_data_types DEL_SEMICOLON
+   44                     | variable_declaration single_plural_ident DEL_COLON . IDENT DEL_SEMICOLON
+   45                     | variable_declaration single_plural_ident DEL_COLON . KW_ARRAY array_size_declaration KW_OF basic_data_types DEL_SEMICOLON
+   46                     | variable_declaration single_plural_ident DEL_COLON . KW_ARRAY KW_OF basic_data_types DEL_SEMICOLON
+
+    IDENT       shift, and go to state 125
+    KW_ARRAY    shift, and go to state 126
+    KW_BOOL     shift, and go to state 118
+    KW_CHAR     shift, and go to state 119
+    KW_INTEGER  shift, and go to state 121
+    KW_REAL     shift, and go to state 122
+
+    basic_data_types  go to state 127
+
+
+State 73
+
+  115 assignment_command: IDENT ASSIGNMENT . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 128
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 74
+
+   25 function_procedure_call: IDENT DEL_LEFTPAR . function_procedure_call_params DEL_RIGHTPAR
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    $default  reduce using rule 26 (function_procedure_call_params)
+
+    function_procedure_call         go to state 91
+    function_procedure_call_params  go to state 129
+    read_string                     go to state 92
+    read_integer                    go to state 93
+    read_real                       go to state 94
+    expressions                     go to state 130
+    array_expression                go to state 96
+    casting                         go to state 97
+
+
+State 75
+
+  128 array_sqr_content: DEL_SQRLEFT . expressions DEL_SQRRIGHT
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 131
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 76
+
+  124 label_command: IDENT DEL_COLON . statement_commands_contents
+
+    IDENT        shift, and go to state 29
+    KW_BEGIN     shift, and go to state 8
+    KW_FOR       shift, and go to state 31
+    KW_GOTO      shift, and go to state 32
+    KW_IF        shift, and go to state 33
+    KW_WHILE     shift, and go to state 34
+    KW_REPEAT    shift, and go to state 35
+    KW_RESULT    shift, and go to state 36
+    KW_RETURN    shift, and go to state 37
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    FUNC_WRSTR   shift, and go to state 42
+    FUNC_WRINT   shift, and go to state 43
+    FUNC_WRREAL  shift, and go to state 44
+
+    function_procedure_call      go to state 45
+    read_string                  go to state 46
+    read_integer                 go to state 47
+    read_real                    go to state 48
+    write_string                 go to state 49
+    write_integer                go to state 50
+    write_real                   go to state 51
+    complex_commands             go to state 99
+    distinct_commands            go to state 100
+    statement_commands_contents  go to state 132
+    assignment_command           go to state 53
+    result_command               go to state 54
+    if_command                   go to state 55
+    for_command                  go to state 56
+    while_command                go to state 57
+    repeat_command               go to state 58
+    label_command                go to state 59
+    goto_command                 go to state 60
+    return_command               go to state 61
+
+
+State 77
+
+  116 assignment_command: IDENT array_sqr_content . ASSIGNMENT expressions
+  129 array_sqr_content: array_sqr_content . DEL_SQRLEFT expressions DEL_SQRRIGHT
+
+    ASSIGNMENT   shift, and go to state 133
+    DEL_SQRLEFT  shift, and go to state 134
+
+
+State 78
+
+  120 for_command: KW_FOR IDENT . ASSIGNMENT expressions KW_TO expressions KW_DO statement_commands_contents
+  121            | KW_FOR IDENT . ASSIGNMENT expressions KW_DOWNTO expressions KW_DO statement_commands_contents
+
+    ASSIGNMENT  shift, and go to state 135
+
+
+State 79
+
+  125 goto_command: KW_GOTO IDENT .
+
+    $default  reduce using rule 125 (goto_command)
+
+
+State 80
+
+   25 function_procedure_call: IDENT . DEL_LEFTPAR function_procedure_call_params DEL_RIGHTPAR
+   59 expressions: IDENT .
+  127 array_expression: IDENT . array_sqr_content
+
+    DEL_LEFTPAR  shift, and go to state 74
+    DEL_SQRLEFT  shift, and go to state 75
+
+    $default  reduce using rule 59 (expressions)
+
+    array_sqr_content  go to state 136
+
+
+State 81
+
+   60 expressions: POSINT .
+
+    $default  reduce using rule 60 (expressions)
+
+
+State 82
+
+   61 expressions: REAL .
+
+    $default  reduce using rule 61 (expressions)
+
+
+State 83
+
+   62 expressions: STRING .
+
+    $default  reduce using rule 62 (expressions)
+
+
+State 84
+
+   70 expressions: KW_NOT . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 137
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 85
+
+   72 expressions: OP_PLUS . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 138
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 86
+
+   73 expressions: OP_MINUS . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 139
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 87
+
+   71 expressions: LOG_NOT . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 140
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 88
+
+   91 expressions: DEL_LEFTPAR . expressions DEL_RIGHTPAR
+  130 casting: DEL_LEFTPAR . data_types DEL_RIGHTPAR
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_ARRAY     shift, and go to state 141
+    KW_BOOL      shift, and go to state 118
+    KW_CHAR      shift, and go to state 119
+    KW_INTEGER   shift, and go to state 121
+    KW_NOT       shift, and go to state 84
+    KW_REAL      shift, and go to state 122
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    basic_data_types         go to state 142
+    data_types               go to state 143
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 144
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 89
+
+   63 expressions: BOOL_TRUE .
+
+    $default  reduce using rule 63 (expressions)
+
+
+State 90
+
+   64 expressions: BOOL_FALSE .
+
+    $default  reduce using rule 64 (expressions)
+
+
+State 91
+
+   69 expressions: function_procedure_call .
+
+    $default  reduce using rule 69 (expressions)
+
+
+State 92
+
+   65 expressions: read_string .
+
+    $default  reduce using rule 65 (expressions)
+
+
+State 93
+
+   66 expressions: read_integer .
+
+    $default  reduce using rule 66 (expressions)
+
+
+State 94
+
+   67 expressions: read_real .
+
+    $default  reduce using rule 67 (expressions)
+
+
+State 95
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+  118 if_command: KW_IF expressions . KW_THEN statement_commands_contents
+
+    KW_AND            shift, and go to state 145
+    KW_DIV            shift, and go to state 146
+    KW_MOD            shift, and go to state 147
+    KW_OR             shift, and go to state 148
+    KW_THEN           shift, and go to state 149
+    OP_PLUS           shift, and go to state 150
+    OP_MINUS          shift, and go to state 151
+    OP_MULT           shift, and go to state 152
+    OP_DIV            shift, and go to state 153
+    CMP_EQUAL         shift, and go to state 154
+    CMP_NOTEQUAL      shift, and go to state 155
+    CMP_LESS          shift, and go to state 156
+    CMP_LESSEQUAL     shift, and go to state 157
+    CMP_GREATER       shift, and go to state 158
+    CMP_GREATEREQUAL  shift, and go to state 159
+    LOG_AND           shift, and go to state 160
+    LOG_OR            shift, and go to state 161
+
+
+State 96
+
+   68 expressions: array_expression .
+
+    $default  reduce using rule 68 (expressions)
+
+
+State 97
+
+   74 expressions: casting . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 162
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 98
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+  122 while_command: KW_WHILE expressions . KW_DO statement_commands_contents
+
+    KW_AND            shift, and go to state 145
+    KW_DIV            shift, and go to state 146
+    KW_DO             shift, and go to state 163
+    KW_MOD            shift, and go to state 147
+    KW_OR             shift, and go to state 148
+    OP_PLUS           shift, and go to state 150
+    OP_MINUS          shift, and go to state 151
+    OP_MULT           shift, and go to state 152
+    OP_DIV            shift, and go to state 153
+    CMP_EQUAL         shift, and go to state 154
+    CMP_NOTEQUAL      shift, and go to state 155
+    CMP_LESS          shift, and go to state 156
+    CMP_LESSEQUAL     shift, and go to state 157
+    CMP_GREATER       shift, and go to state 158
+    CMP_GREATEREQUAL  shift, and go to state 159
+    LOG_AND           shift, and go to state 160
+    LOG_OR            shift, and go to state 161
+
+
+State 99
+
+  114 statement_commands_contents: complex_commands .
+
+    $default  reduce using rule 114 (statement_commands_contents)
+
+
+State 100
+
+  113 statement_commands_contents: distinct_commands .
+
+    $default  reduce using rule 113 (statement_commands_contents)
+
+
+State 101
+
+  123 repeat_command: KW_REPEAT statement_commands_contents . KW_UNTIL expressions
+
+    KW_UNTIL  shift, and go to state 164
+
+
+State 102
+
+  117 result_command: KW_RESULT ASSIGNMENT . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 165
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 103
+
+   94 complex_command_content: complex_command_content DEL_SEMICOLON distinct_commands .
+
+    $default  reduce using rule 94 (complex_command_content)
+
+
+State 104
+
+   49 read_string: FUNC_RDSTR DEL_LEFTPAR . DEL_RIGHTPAR
+
+    DEL_RIGHTPAR  shift, and go to state 166
+
+
+State 105
+
+   50 read_integer: FUNC_RDINT DEL_LEFTPAR . DEL_RIGHTPAR
+
+    DEL_RIGHTPAR  shift, and go to state 167
+
+
+State 106
+
+   51 read_real: FUNC_RDREAL DEL_LEFTPAR . DEL_RIGHTPAR
+
+    DEL_RIGHTPAR  shift, and go to state 168
+
+
+State 107
+
+   52 write_string: FUNC_WRSTR DEL_LEFTPAR . IDENT DEL_RIGHTPAR
+   53             | FUNC_WRSTR DEL_LEFTPAR . STRING DEL_RIGHTPAR
+   54             | FUNC_WRSTR DEL_LEFTPAR . KW_RESULT DEL_RIGHTPAR
+
+    IDENT      shift, and go to state 169
+    STRING     shift, and go to state 170
+    KW_RESULT  shift, and go to state 171
+
+
+State 108
+
+   55 write_integer: FUNC_WRINT DEL_LEFTPAR . expressions DEL_RIGHTPAR
+   56              | FUNC_WRINT DEL_LEFTPAR . KW_RESULT DEL_RIGHTPAR
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    KW_RESULT    shift, and go to state 172
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 173
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 109
+
+   57 write_real: FUNC_WRREAL DEL_LEFTPAR . expressions DEL_RIGHTPAR
+   58           | FUNC_WRREAL DEL_LEFTPAR . KW_RESULT DEL_RIGHTPAR
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    KW_RESULT    shift, and go to state 174
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 175
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 110
+
+  119 if_command: if_command KW_ELSE . statement_commands_contents
+
+    IDENT        shift, and go to state 29
+    KW_BEGIN     shift, and go to state 8
+    KW_FOR       shift, and go to state 31
+    KW_GOTO      shift, and go to state 32
+    KW_IF        shift, and go to state 33
+    KW_WHILE     shift, and go to state 34
+    KW_REPEAT    shift, and go to state 35
+    KW_RESULT    shift, and go to state 36
+    KW_RETURN    shift, and go to state 37
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    FUNC_WRSTR   shift, and go to state 42
+    FUNC_WRINT   shift, and go to state 43
+    FUNC_WRREAL  shift, and go to state 44
+
+    function_procedure_call      go to state 45
+    read_string                  go to state 46
+    read_integer                 go to state 47
+    read_real                    go to state 48
+    write_string                 go to state 49
+    write_integer                go to state 50
+    write_real                   go to state 51
+    complex_commands             go to state 99
+    distinct_commands            go to state 100
+    statement_commands_contents  go to state 176
+    assignment_command           go to state 53
+    result_command               go to state 54
+    if_command                   go to state 55
+    for_command                  go to state 56
+    while_command                go to state 57
+    repeat_command               go to state 58
+    label_command                go to state 59
+    goto_command                 go to state 60
+    return_command               go to state 61
+
+
+State 111
+
+   17 function_procedure_param: IDENT . DEL_COLON basic_data_types
+   18                         | IDENT . DEL_COLON KW_ARRAY array_size_declaration KW_OF basic_data_types
+   19                         | IDENT . DEL_COLON KW_ARRAY KW_OF basic_data_types
+   20                         | IDENT . DEL_COLON IDENT
+
+    DEL_COLON  shift, and go to state 177
+
+
+State 112
+
+   13 function_header: KW_FUNCTION IDENT DEL_LEFTPAR function_procedure_param . DEL_RIGHTPAR DEL_COLON data_types DEL_SEMICOLON
+   21 function_procedure_param: function_procedure_param . DEL_SEMICOLON IDENT DEL_COLON basic_data_types
+   22                         | function_procedure_param . DEL_SEMICOLON IDENT DEL_COLON KW_ARRAY array_size_declaration KW_OF basic_data_types
+   23                         | function_procedure_param . DEL_SEMICOLON IDENT DEL_COLON KW_ARRAY KW_OF basic_data_types
+   24                         | function_procedure_param . DEL_SEMICOLON IDENT DEL_COLON IDENT
+
+    DEL_SEMICOLON  shift, and go to state 178
+    DEL_RIGHTPAR   shift, and go to state 179
+
+
+State 113
+
+   15 procedure_header: KW_PROCEDURE IDENT DEL_LEFTPAR function_procedure_param . DEL_RIGHTPAR DEL_SEMICOLON
+   21 function_procedure_param: function_procedure_param . DEL_SEMICOLON IDENT DEL_COLON basic_data_types
+   22                         | function_procedure_param . DEL_SEMICOLON IDENT DEL_COLON KW_ARRAY array_size_declaration KW_OF basic_data_types
+   23                         | function_procedure_param . DEL_SEMICOLON IDENT DEL_COLON KW_ARRAY KW_OF basic_data_types
+   24                         | function_procedure_param . DEL_SEMICOLON IDENT DEL_COLON IDENT
+
+    DEL_SEMICOLON  shift, and go to state 178
+    DEL_RIGHTPAR   shift, and go to state 180
+
+
+State 114
+
+   93 complex_command_content: complex_command_content . distinct_commands
+   94                        | complex_command_content . DEL_SEMICOLON distinct_commands
+   96 function_complex_commands: KW_BEGIN complex_command_content . DEL_SEMICOLON KW_RETURN KW_END
+
+    IDENT          shift, and go to state 29
+    KW_FOR         shift, and go to state 31
+    KW_GOTO        shift, and go to state 32
+    KW_IF          shift, and go to state 33
+    KW_WHILE       shift, and go to state 34
+    KW_REPEAT      shift, and go to state 35
+    KW_RESULT      shift, and go to state 36
+    KW_RETURN      shift, and go to state 37
+    DEL_SEMICOLON  shift, and go to state 181
+    FUNC_RDSTR     shift, and go to state 39
+    FUNC_RDINT     shift, and go to state 40
+    FUNC_RDREAL    shift, and go to state 41
+    FUNC_WRSTR     shift, and go to state 42
+    FUNC_WRINT     shift, and go to state 43
+    FUNC_WRREAL    shift, and go to state 44
+
+    function_procedure_call  go to state 45
+    read_string              go to state 46
+    read_integer             go to state 47
+    read_real                go to state 48
+    write_string             go to state 49
+    write_integer            go to state 50
+    write_real               go to state 51
+    distinct_commands        go to state 52
+    assignment_command       go to state 53
+    result_command           go to state 54
+    if_command               go to state 55
+    for_command              go to state 56
+    while_command            go to state 57
+    repeat_command           go to state 58
+    label_command            go to state 59
+    goto_command             go to state 60
+    return_command           go to state 61
+
+
+State 115
+
+    8 function: function_header function_procedure_start_contents function_complex_commands DEL_SEMICOLON .
+
+    $default  reduce using rule 8 (function)
+
+
+State 116
+
+   14 procedure: procedure_header function_procedure_start_contents complex_commands DEL_SEMICOLON .
+
+    $default  reduce using rule 14 (procedure)
+
+
+State 117
+
+   40 typedef_declaration: typedef_declaration IDENT CMP_EQUAL KW_ARRAY . array_size_declaration KW_OF basic_data_types DEL_SEMICOLON
+   41                    | typedef_declaration IDENT CMP_EQUAL KW_ARRAY . KW_OF basic_data_types DEL_SEMICOLON
+
+    KW_OF        shift, and go to state 182
+    DEL_SQRLEFT  shift, and go to state 183
+
+    array_size_declaration  go to state 184
+
+
+State 118
+
+   30 basic_data_types: KW_BOOL .
+
+    $default  reduce using rule 30 (basic_data_types)
+
+
+State 119
+
+   31 basic_data_types: KW_CHAR .
+
+    $default  reduce using rule 31 (basic_data_types)
+
+
+State 120
+
+   39 typedef_declaration: typedef_declaration IDENT CMP_EQUAL KW_FUNCTION . DEL_LEFTPAR function_procedure_param DEL_RIGHTPAR DEL_COLON basic_data_types DEL_SEMICOLON
+
+    DEL_LEFTPAR  shift, and go to state 185
+
+
+State 121
+
+   29 basic_data_types: KW_INTEGER .
+
+    $default  reduce using rule 29 (basic_data_types)
+
+
+State 122
+
+   32 basic_data_types: KW_REAL .
+
+    $default  reduce using rule 32 (basic_data_types)
+
+
+State 123
+
+   38 typedef_declaration: typedef_declaration IDENT CMP_EQUAL basic_data_types . DEL_SEMICOLON
+
+    DEL_SEMICOLON  shift, and go to state 186
+
+
+State 124
+
+   47 single_plural_ident: single_plural_ident DEL_COMMA IDENT .
+
+    $default  reduce using rule 47 (single_plural_ident)
+
+
+State 125
+
+   44 variable_declaration: variable_declaration single_plural_ident DEL_COLON IDENT . DEL_SEMICOLON
+
+    DEL_SEMICOLON  shift, and go to state 187
+
+
+State 126
+
+   45 variable_declaration: variable_declaration single_plural_ident DEL_COLON KW_ARRAY . array_size_declaration KW_OF basic_data_types DEL_SEMICOLON
+   46                     | variable_declaration single_plural_ident DEL_COLON KW_ARRAY . KW_OF basic_data_types DEL_SEMICOLON
+
+    KW_OF        shift, and go to state 188
+    DEL_SQRLEFT  shift, and go to state 183
+
+    array_size_declaration  go to state 189
+
+
+State 127
+
+   43 variable_declaration: variable_declaration single_plural_ident DEL_COLON basic_data_types . DEL_SEMICOLON
+
+    DEL_SEMICOLON  shift, and go to state 190
+
+
+State 128
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+  115 assignment_command: IDENT ASSIGNMENT expressions .
+
+    KW_AND            shift, and go to state 145
+    KW_DIV            shift, and go to state 146
+    KW_MOD            shift, and go to state 147
+    KW_OR             shift, and go to state 148
+    OP_PLUS           shift, and go to state 150
+    OP_MINUS          shift, and go to state 151
+    OP_MULT           shift, and go to state 152
+    OP_DIV            shift, and go to state 153
+    CMP_EQUAL         shift, and go to state 154
+    CMP_NOTEQUAL      shift, and go to state 155
+    CMP_LESS          shift, and go to state 156
+    CMP_LESSEQUAL     shift, and go to state 157
+    CMP_GREATER       shift, and go to state 158
+    CMP_GREATEREQUAL  shift, and go to state 159
+    LOG_AND           shift, and go to state 160
+    LOG_OR            shift, and go to state 161
+
+    $default  reduce using rule 115 (assignment_command)
+
+
+State 129
+
+   25 function_procedure_call: IDENT DEL_LEFTPAR function_procedure_call_params . DEL_RIGHTPAR
+   28 function_procedure_call_params: function_procedure_call_params . DEL_COMMA expressions
+
+    DEL_RIGHTPAR  shift, and go to state 191
+    DEL_COMMA     shift, and go to state 192
+
+
+State 130
+
+   27 function_procedure_call_params: expressions .
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+
+    KW_AND            shift, and go to state 145
+    KW_DIV            shift, and go to state 146
+    KW_MOD            shift, and go to state 147
+    KW_OR             shift, and go to state 148
+    OP_PLUS           shift, and go to state 150
+    OP_MINUS          shift, and go to state 151
+    OP_MULT           shift, and go to state 152
+    OP_DIV            shift, and go to state 153
+    CMP_EQUAL         shift, and go to state 154
+    CMP_NOTEQUAL      shift, and go to state 155
+    CMP_LESS          shift, and go to state 156
+    CMP_LESSEQUAL     shift, and go to state 157
+    CMP_GREATER       shift, and go to state 158
+    CMP_GREATEREQUAL  shift, and go to state 159
+    LOG_AND           shift, and go to state 160
+    LOG_OR            shift, and go to state 161
+
+    $default  reduce using rule 27 (function_procedure_call_params)
+
+
+State 131
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+  128 array_sqr_content: DEL_SQRLEFT expressions . DEL_SQRRIGHT
+
+    KW_AND            shift, and go to state 145
+    KW_DIV            shift, and go to state 146
+    KW_MOD            shift, and go to state 147
+    KW_OR             shift, and go to state 148
+    OP_PLUS           shift, and go to state 150
+    OP_MINUS          shift, and go to state 151
+    OP_MULT           shift, and go to state 152
+    OP_DIV            shift, and go to state 153
+    CMP_EQUAL         shift, and go to state 154
+    CMP_NOTEQUAL      shift, and go to state 155
+    CMP_LESS          shift, and go to state 156
+    CMP_LESSEQUAL     shift, and go to state 157
+    CMP_GREATER       shift, and go to state 158
+    CMP_GREATEREQUAL  shift, and go to state 159
+    LOG_AND           shift, and go to state 160
+    LOG_OR            shift, and go to state 161
+    DEL_SQRRIGHT      shift, and go to state 193
+
+
+State 132
+
+  124 label_command: IDENT DEL_COLON statement_commands_contents .
+
+    $default  reduce using rule 124 (label_command)
+
+
+State 133
+
+  116 assignment_command: IDENT array_sqr_content ASSIGNMENT . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 194
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 134
+
+  129 array_sqr_content: array_sqr_content DEL_SQRLEFT . expressions DEL_SQRRIGHT
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 195
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 135
+
+  120 for_command: KW_FOR IDENT ASSIGNMENT . expressions KW_TO expressions KW_DO statement_commands_contents
+  121            | KW_FOR IDENT ASSIGNMENT . expressions KW_DOWNTO expressions KW_DO statement_commands_contents
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 196
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 136
+
+  127 array_expression: IDENT array_sqr_content .
+  129 array_sqr_content: array_sqr_content . DEL_SQRLEFT expressions DEL_SQRRIGHT
+
+    DEL_SQRLEFT  shift, and go to state 134
+
+    $default  reduce using rule 127 (array_expression)
+
+
+State 137
+
+   70 expressions: KW_NOT expressions .
+   75            | expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+
+    $default  reduce using rule 70 (expressions)
+
+
+State 138
+
+   72 expressions: OP_PLUS expressions .
+   75            | expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+
+    $default  reduce using rule 72 (expressions)
+
+
+State 139
+
+   73 expressions: OP_MINUS expressions .
+   75            | expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+
+    $default  reduce using rule 73 (expressions)
+
+
+State 140
+
+   71 expressions: LOG_NOT expressions .
+   75            | expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+
+    $default  reduce using rule 71 (expressions)
+
+
+State 141
+
+   34 data_types: KW_ARRAY . KW_OF basic_data_types
+
+    KW_OF  shift, and go to state 197
+
+
+State 142
+
+   33 data_types: basic_data_types .
+
+    $default  reduce using rule 33 (data_types)
+
+
+State 143
+
+  130 casting: DEL_LEFTPAR data_types . DEL_RIGHTPAR
+
+    DEL_RIGHTPAR  shift, and go to state 198
+
+
+State 144
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+   91            | DEL_LEFTPAR expressions . DEL_RIGHTPAR
+
+    KW_AND            shift, and go to state 145
+    KW_DIV            shift, and go to state 146
+    KW_MOD            shift, and go to state 147
+    KW_OR             shift, and go to state 148
+    OP_PLUS           shift, and go to state 150
+    OP_MINUS          shift, and go to state 151
+    OP_MULT           shift, and go to state 152
+    OP_DIV            shift, and go to state 153
+    CMP_EQUAL         shift, and go to state 154
+    CMP_NOTEQUAL      shift, and go to state 155
+    CMP_LESS          shift, and go to state 156
+    CMP_LESSEQUAL     shift, and go to state 157
+    CMP_GREATER       shift, and go to state 158
+    CMP_GREATEREQUAL  shift, and go to state 159
+    LOG_AND           shift, and go to state 160
+    LOG_OR            shift, and go to state 161
+    DEL_RIGHTPAR      shift, and go to state 199
+
+
+State 145
+
+   87 expressions: expressions KW_AND . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 200
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 146
+
+   77 expressions: expressions KW_DIV . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 201
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 147
+
+   78 expressions: expressions KW_MOD . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 202
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 148
+
+   89 expressions: expressions KW_OR . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 203
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 149
+
+  118 if_command: KW_IF expressions KW_THEN . statement_commands_contents
+
+    IDENT        shift, and go to state 29
+    KW_BEGIN     shift, and go to state 8
+    KW_FOR       shift, and go to state 31
+    KW_GOTO      shift, and go to state 32
+    KW_IF        shift, and go to state 33
+    KW_WHILE     shift, and go to state 34
+    KW_REPEAT    shift, and go to state 35
+    KW_RESULT    shift, and go to state 36
+    KW_RETURN    shift, and go to state 37
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    FUNC_WRSTR   shift, and go to state 42
+    FUNC_WRINT   shift, and go to state 43
+    FUNC_WRREAL  shift, and go to state 44
+
+    function_procedure_call      go to state 45
+    read_string                  go to state 46
+    read_integer                 go to state 47
+    read_real                    go to state 48
+    write_string                 go to state 49
+    write_integer                go to state 50
+    write_real                   go to state 51
+    complex_commands             go to state 99
+    distinct_commands            go to state 100
+    statement_commands_contents  go to state 204
+    assignment_command           go to state 53
+    result_command               go to state 54
+    if_command                   go to state 55
+    for_command                  go to state 56
+    while_command                go to state 57
+    repeat_command               go to state 58
+    label_command                go to state 59
+    goto_command                 go to state 60
+    return_command               go to state 61
+
+
+State 150
+
+   79 expressions: expressions OP_PLUS . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 205
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 151
+
+   80 expressions: expressions OP_MINUS . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 206
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 152
+
+   75 expressions: expressions OP_MULT . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 207
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 153
+
+   76 expressions: expressions OP_DIV . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 208
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 154
+
+   81 expressions: expressions CMP_EQUAL . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 209
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 155
+
+   82 expressions: expressions CMP_NOTEQUAL . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 210
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 156
+
+   83 expressions: expressions CMP_LESS . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 211
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 157
+
+   84 expressions: expressions CMP_LESSEQUAL . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 212
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 158
+
+   85 expressions: expressions CMP_GREATER . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 213
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 159
+
+   86 expressions: expressions CMP_GREATEREQUAL . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 214
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 160
+
+   88 expressions: expressions LOG_AND . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 215
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 161
+
+   90 expressions: expressions LOG_OR . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 216
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 162
+
+   74 expressions: casting expressions .
+   75            | expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+
+    $default  reduce using rule 74 (expressions)
+
+
+State 163
+
+  122 while_command: KW_WHILE expressions KW_DO . statement_commands_contents
+
+    IDENT        shift, and go to state 29
+    KW_BEGIN     shift, and go to state 8
+    KW_FOR       shift, and go to state 31
+    KW_GOTO      shift, and go to state 32
+    KW_IF        shift, and go to state 33
+    KW_WHILE     shift, and go to state 34
+    KW_REPEAT    shift, and go to state 35
+    KW_RESULT    shift, and go to state 36
+    KW_RETURN    shift, and go to state 37
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    FUNC_WRSTR   shift, and go to state 42
+    FUNC_WRINT   shift, and go to state 43
+    FUNC_WRREAL  shift, and go to state 44
+
+    function_procedure_call      go to state 45
+    read_string                  go to state 46
+    read_integer                 go to state 47
+    read_real                    go to state 48
+    write_string                 go to state 49
+    write_integer                go to state 50
+    write_real                   go to state 51
+    complex_commands             go to state 99
+    distinct_commands            go to state 100
+    statement_commands_contents  go to state 217
+    assignment_command           go to state 53
+    result_command               go to state 54
+    if_command                   go to state 55
+    for_command                  go to state 56
+    while_command                go to state 57
+    repeat_command               go to state 58
+    label_command                go to state 59
+    goto_command                 go to state 60
+    return_command               go to state 61
+
+
+State 164
+
+  123 repeat_command: KW_REPEAT statement_commands_contents KW_UNTIL . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 218
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 165
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+  117 result_command: KW_RESULT ASSIGNMENT expressions .
+
+    KW_AND            shift, and go to state 145
+    KW_DIV            shift, and go to state 146
+    KW_MOD            shift, and go to state 147
+    KW_OR             shift, and go to state 148
+    OP_PLUS           shift, and go to state 150
+    OP_MINUS          shift, and go to state 151
+    OP_MULT           shift, and go to state 152
+    OP_DIV            shift, and go to state 153
+    CMP_EQUAL         shift, and go to state 154
+    CMP_NOTEQUAL      shift, and go to state 155
+    CMP_LESS          shift, and go to state 156
+    CMP_LESSEQUAL     shift, and go to state 157
+    CMP_GREATER       shift, and go to state 158
+    CMP_GREATEREQUAL  shift, and go to state 159
+    LOG_AND           shift, and go to state 160
+    LOG_OR            shift, and go to state 161
+
+    $default  reduce using rule 117 (result_command)
+
+
+State 166
+
+   49 read_string: FUNC_RDSTR DEL_LEFTPAR DEL_RIGHTPAR .
+
+    $default  reduce using rule 49 (read_string)
+
+
+State 167
+
+   50 read_integer: FUNC_RDINT DEL_LEFTPAR DEL_RIGHTPAR .
+
+    $default  reduce using rule 50 (read_integer)
+
+
+State 168
+
+   51 read_real: FUNC_RDREAL DEL_LEFTPAR DEL_RIGHTPAR .
+
+    $default  reduce using rule 51 (read_real)
+
+
+State 169
+
+   52 write_string: FUNC_WRSTR DEL_LEFTPAR IDENT . DEL_RIGHTPAR
+
+    DEL_RIGHTPAR  shift, and go to state 219
+
+
+State 170
+
+   53 write_string: FUNC_WRSTR DEL_LEFTPAR STRING . DEL_RIGHTPAR
+
+    DEL_RIGHTPAR  shift, and go to state 220
+
+
+State 171
+
+   54 write_string: FUNC_WRSTR DEL_LEFTPAR KW_RESULT . DEL_RIGHTPAR
+
+    DEL_RIGHTPAR  shift, and go to state 221
+
+
+State 172
+
+   56 write_integer: FUNC_WRINT DEL_LEFTPAR KW_RESULT . DEL_RIGHTPAR
+
+    DEL_RIGHTPAR  shift, and go to state 222
+
+
+State 173
+
+   55 write_integer: FUNC_WRINT DEL_LEFTPAR expressions . DEL_RIGHTPAR
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+
+    KW_AND            shift, and go to state 145
+    KW_DIV            shift, and go to state 146
+    KW_MOD            shift, and go to state 147
+    KW_OR             shift, and go to state 148
+    OP_PLUS           shift, and go to state 150
+    OP_MINUS          shift, and go to state 151
+    OP_MULT           shift, and go to state 152
+    OP_DIV            shift, and go to state 153
+    CMP_EQUAL         shift, and go to state 154
+    CMP_NOTEQUAL      shift, and go to state 155
+    CMP_LESS          shift, and go to state 156
+    CMP_LESSEQUAL     shift, and go to state 157
+    CMP_GREATER       shift, and go to state 158
+    CMP_GREATEREQUAL  shift, and go to state 159
+    LOG_AND           shift, and go to state 160
+    LOG_OR            shift, and go to state 161
+    DEL_RIGHTPAR      shift, and go to state 223
+
+
+State 174
+
+   58 write_real: FUNC_WRREAL DEL_LEFTPAR KW_RESULT . DEL_RIGHTPAR
+
+    DEL_RIGHTPAR  shift, and go to state 224
+
+
+State 175
+
+   57 write_real: FUNC_WRREAL DEL_LEFTPAR expressions . DEL_RIGHTPAR
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+
+    KW_AND            shift, and go to state 145
+    KW_DIV            shift, and go to state 146
+    KW_MOD            shift, and go to state 147
+    KW_OR             shift, and go to state 148
+    OP_PLUS           shift, and go to state 150
+    OP_MINUS          shift, and go to state 151
+    OP_MULT           shift, and go to state 152
+    OP_DIV            shift, and go to state 153
+    CMP_EQUAL         shift, and go to state 154
+    CMP_NOTEQUAL      shift, and go to state 155
+    CMP_LESS          shift, and go to state 156
+    CMP_LESSEQUAL     shift, and go to state 157
+    CMP_GREATER       shift, and go to state 158
+    CMP_GREATEREQUAL  shift, and go to state 159
+    LOG_AND           shift, and go to state 160
+    LOG_OR            shift, and go to state 161
+    DEL_RIGHTPAR      shift, and go to state 225
+
+
+State 176
+
+  119 if_command: if_command KW_ELSE statement_commands_contents .
+
+    $default  reduce using rule 119 (if_command)
+
+
+State 177
+
+   17 function_procedure_param: IDENT DEL_COLON . basic_data_types
+   18                         | IDENT DEL_COLON . KW_ARRAY array_size_declaration KW_OF basic_data_types
+   19                         | IDENT DEL_COLON . KW_ARRAY KW_OF basic_data_types
+   20                         | IDENT DEL_COLON . IDENT
+
+    IDENT       shift, and go to state 226
+    KW_ARRAY    shift, and go to state 227
+    KW_BOOL     shift, and go to state 118
+    KW_CHAR     shift, and go to state 119
+    KW_INTEGER  shift, and go to state 121
+    KW_REAL     shift, and go to state 122
+
+    basic_data_types  go to state 228
+
+
+State 178
+
+   21 function_procedure_param: function_procedure_param DEL_SEMICOLON . IDENT DEL_COLON basic_data_types
+   22                         | function_procedure_param DEL_SEMICOLON . IDENT DEL_COLON KW_ARRAY array_size_declaration KW_OF basic_data_types
+   23                         | function_procedure_param DEL_SEMICOLON . IDENT DEL_COLON KW_ARRAY KW_OF basic_data_types
+   24                         | function_procedure_param DEL_SEMICOLON . IDENT DEL_COLON IDENT
+
+    IDENT  shift, and go to state 229
+
+
+State 179
+
+   13 function_header: KW_FUNCTION IDENT DEL_LEFTPAR function_procedure_param DEL_RIGHTPAR . DEL_COLON data_types DEL_SEMICOLON
+
+    DEL_COLON  shift, and go to state 230
+
+
+State 180
+
+   15 procedure_header: KW_PROCEDURE IDENT DEL_LEFTPAR function_procedure_param DEL_RIGHTPAR . DEL_SEMICOLON
+
+    DEL_SEMICOLON  shift, and go to state 231
+
+
+State 181
+
+   94 complex_command_content: complex_command_content DEL_SEMICOLON . distinct_commands
+   96 function_complex_commands: KW_BEGIN complex_command_content DEL_SEMICOLON . KW_RETURN KW_END
+
+    IDENT        shift, and go to state 29
+    KW_FOR       shift, and go to state 31
+    KW_GOTO      shift, and go to state 32
+    KW_IF        shift, and go to state 33
+    KW_WHILE     shift, and go to state 34
+    KW_REPEAT    shift, and go to state 35
+    KW_RESULT    shift, and go to state 36
+    KW_RETURN    shift, and go to state 232
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    FUNC_WRSTR   shift, and go to state 42
+    FUNC_WRINT   shift, and go to state 43
+    FUNC_WRREAL  shift, and go to state 44
+
+    function_procedure_call  go to state 45
+    read_string              go to state 46
+    read_integer             go to state 47
+    read_real                go to state 48
+    write_string             go to state 49
+    write_integer            go to state 50
+    write_real               go to state 51
+    distinct_commands        go to state 103
+    assignment_command       go to state 53
+    result_command           go to state 54
+    if_command               go to state 55
+    for_command              go to state 56
+    while_command            go to state 57
+    repeat_command           go to state 58
+    label_command            go to state 59
+    goto_command             go to state 60
+    return_command           go to state 61
+
+
+State 182
+
+   41 typedef_declaration: typedef_declaration IDENT CMP_EQUAL KW_ARRAY KW_OF . basic_data_types DEL_SEMICOLON
+
+    KW_BOOL     shift, and go to state 118
+    KW_CHAR     shift, and go to state 119
+    KW_INTEGER  shift, and go to state 121
+    KW_REAL     shift, and go to state 122
+
+    basic_data_types  go to state 233
+
+
+State 183
+
+   35 array_size_declaration: DEL_SQRLEFT . POSINT DEL_SQRRIGHT
+
+    POSINT  shift, and go to state 234
+
+
+State 184
+
+   36 array_size_declaration: array_size_declaration . DEL_SQRLEFT POSINT DEL_SQRRIGHT
+   40 typedef_declaration: typedef_declaration IDENT CMP_EQUAL KW_ARRAY array_size_declaration . KW_OF basic_data_types DEL_SEMICOLON
+
+    KW_OF        shift, and go to state 235
+    DEL_SQRLEFT  shift, and go to state 236
+
+
+State 185
+
+   39 typedef_declaration: typedef_declaration IDENT CMP_EQUAL KW_FUNCTION DEL_LEFTPAR . function_procedure_param DEL_RIGHTPAR DEL_COLON basic_data_types DEL_SEMICOLON
+
+    IDENT  shift, and go to state 111
+
+    $default  reduce using rule 16 (function_procedure_param)
+
+    function_procedure_param  go to state 237
+
+
+State 186
+
+   38 typedef_declaration: typedef_declaration IDENT CMP_EQUAL basic_data_types DEL_SEMICOLON .
+
+    $default  reduce using rule 38 (typedef_declaration)
+
+
+State 187
+
+   44 variable_declaration: variable_declaration single_plural_ident DEL_COLON IDENT DEL_SEMICOLON .
+
+    $default  reduce using rule 44 (variable_declaration)
+
+
+State 188
+
+   46 variable_declaration: variable_declaration single_plural_ident DEL_COLON KW_ARRAY KW_OF . basic_data_types DEL_SEMICOLON
+
+    KW_BOOL     shift, and go to state 118
+    KW_CHAR     shift, and go to state 119
+    KW_INTEGER  shift, and go to state 121
+    KW_REAL     shift, and go to state 122
+
+    basic_data_types  go to state 238
+
+
+State 189
+
+   36 array_size_declaration: array_size_declaration . DEL_SQRLEFT POSINT DEL_SQRRIGHT
+   45 variable_declaration: variable_declaration single_plural_ident DEL_COLON KW_ARRAY array_size_declaration . KW_OF basic_data_types DEL_SEMICOLON
+
+    KW_OF        shift, and go to state 239
+    DEL_SQRLEFT  shift, and go to state 236
+
+
+State 190
+
+   43 variable_declaration: variable_declaration single_plural_ident DEL_COLON basic_data_types DEL_SEMICOLON .
+
+    $default  reduce using rule 43 (variable_declaration)
+
+
+State 191
+
+   25 function_procedure_call: IDENT DEL_LEFTPAR function_procedure_call_params DEL_RIGHTPAR .
+
+    $default  reduce using rule 25 (function_procedure_call)
+
+
+State 192
+
+   28 function_procedure_call_params: function_procedure_call_params DEL_COMMA . expressions
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 240
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 193
+
+  128 array_sqr_content: DEL_SQRLEFT expressions DEL_SQRRIGHT .
+
+    $default  reduce using rule 128 (array_sqr_content)
+
+
+State 194
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+  116 assignment_command: IDENT array_sqr_content ASSIGNMENT expressions .
+
+    KW_AND            shift, and go to state 145
+    KW_DIV            shift, and go to state 146
+    KW_MOD            shift, and go to state 147
+    KW_OR             shift, and go to state 148
+    OP_PLUS           shift, and go to state 150
+    OP_MINUS          shift, and go to state 151
+    OP_MULT           shift, and go to state 152
+    OP_DIV            shift, and go to state 153
+    CMP_EQUAL         shift, and go to state 154
+    CMP_NOTEQUAL      shift, and go to state 155
+    CMP_LESS          shift, and go to state 156
+    CMP_LESSEQUAL     shift, and go to state 157
+    CMP_GREATER       shift, and go to state 158
+    CMP_GREATEREQUAL  shift, and go to state 159
+    LOG_AND           shift, and go to state 160
+    LOG_OR            shift, and go to state 161
+
+    $default  reduce using rule 116 (assignment_command)
+
+
+State 195
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+  129 array_sqr_content: array_sqr_content DEL_SQRLEFT expressions . DEL_SQRRIGHT
+
+    KW_AND            shift, and go to state 145
+    KW_DIV            shift, and go to state 146
+    KW_MOD            shift, and go to state 147
+    KW_OR             shift, and go to state 148
+    OP_PLUS           shift, and go to state 150
+    OP_MINUS          shift, and go to state 151
+    OP_MULT           shift, and go to state 152
+    OP_DIV            shift, and go to state 153
+    CMP_EQUAL         shift, and go to state 154
+    CMP_NOTEQUAL      shift, and go to state 155
+    CMP_LESS          shift, and go to state 156
+    CMP_LESSEQUAL     shift, and go to state 157
+    CMP_GREATER       shift, and go to state 158
+    CMP_GREATEREQUAL  shift, and go to state 159
+    LOG_AND           shift, and go to state 160
+    LOG_OR            shift, and go to state 161
+    DEL_SQRRIGHT      shift, and go to state 241
+
+
+State 196
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+  120 for_command: KW_FOR IDENT ASSIGNMENT expressions . KW_TO expressions KW_DO statement_commands_contents
+  121            | KW_FOR IDENT ASSIGNMENT expressions . KW_DOWNTO expressions KW_DO statement_commands_contents
+
+    KW_AND            shift, and go to state 145
+    KW_DIV            shift, and go to state 146
+    KW_MOD            shift, and go to state 147
+    KW_OR             shift, and go to state 148
+    KW_TO             shift, and go to state 242
+    KW_DOWNTO         shift, and go to state 243
+    OP_PLUS           shift, and go to state 150
+    OP_MINUS          shift, and go to state 151
+    OP_MULT           shift, and go to state 152
+    OP_DIV            shift, and go to state 153
+    CMP_EQUAL         shift, and go to state 154
+    CMP_NOTEQUAL      shift, and go to state 155
+    CMP_LESS          shift, and go to state 156
+    CMP_LESSEQUAL     shift, and go to state 157
+    CMP_GREATER       shift, and go to state 158
+    CMP_GREATEREQUAL  shift, and go to state 159
+    LOG_AND           shift, and go to state 160
+    LOG_OR            shift, and go to state 161
+
+
+State 197
+
+   34 data_types: KW_ARRAY KW_OF . basic_data_types
+
+    KW_BOOL     shift, and go to state 118
+    KW_CHAR     shift, and go to state 119
+    KW_INTEGER  shift, and go to state 121
+    KW_REAL     shift, and go to state 122
+
+    basic_data_types  go to state 244
+
+
+State 198
+
+  130 casting: DEL_LEFTPAR data_types DEL_RIGHTPAR .
+
+    $default  reduce using rule 130 (casting)
+
+
+State 199
+
+   91 expressions: DEL_LEFTPAR expressions DEL_RIGHTPAR .
+
+    $default  reduce using rule 91 (expressions)
+
+
+State 200
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   87            | expressions KW_AND expressions .
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+
+    $default  reduce using rule 87 (expressions)
+
+
+State 201
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   77            | expressions KW_DIV expressions .
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+
+    $default  reduce using rule 77 (expressions)
+
+
+State 202
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   78            | expressions KW_MOD expressions .
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+
+    $default  reduce using rule 78 (expressions)
+
+
+State 203
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   89            | expressions KW_OR expressions .
+   90            | expressions . LOG_OR expressions
+
+    $default  reduce using rule 89 (expressions)
+
+
+State 204
+
+  118 if_command: KW_IF expressions KW_THEN statement_commands_contents .
+
+    $default  reduce using rule 118 (if_command)
+
+
+State 205
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   79            | expressions OP_PLUS expressions .
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+
+    $default  reduce using rule 79 (expressions)
+
+
+State 206
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   80            | expressions OP_MINUS expressions .
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+
+    $default  reduce using rule 80 (expressions)
+
+
+State 207
+
+   75 expressions: expressions . OP_MULT expressions
+   75            | expressions OP_MULT expressions .
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+
+    $default  reduce using rule 75 (expressions)
+
+
+State 208
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   76            | expressions OP_DIV expressions .
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+
+    $default  reduce using rule 76 (expressions)
+
+
+State 209
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   81            | expressions CMP_EQUAL expressions .
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+
+    $default  reduce using rule 81 (expressions)
+
+
+State 210
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   82            | expressions CMP_NOTEQUAL expressions .
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+
+    $default  reduce using rule 82 (expressions)
+
+
+State 211
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   83            | expressions CMP_LESS expressions .
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+
+    $default  reduce using rule 83 (expressions)
+
+
+State 212
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   84            | expressions CMP_LESSEQUAL expressions .
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+
+    $default  reduce using rule 84 (expressions)
+
+
+State 213
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   85            | expressions CMP_GREATER expressions .
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+
+    $default  reduce using rule 85 (expressions)
+
+
+State 214
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   86            | expressions CMP_GREATEREQUAL expressions .
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+
+    $default  reduce using rule 86 (expressions)
+
+
+State 215
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   88            | expressions LOG_AND expressions .
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+
+    $default  reduce using rule 88 (expressions)
+
+
+State 216
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+   90            | expressions LOG_OR expressions .
+
+    $default  reduce using rule 90 (expressions)
+
+
+State 217
+
+  122 while_command: KW_WHILE expressions KW_DO statement_commands_contents .
+
+    $default  reduce using rule 122 (while_command)
+
+
+State 218
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+  123 repeat_command: KW_REPEAT statement_commands_contents KW_UNTIL expressions .
+
+    KW_AND            shift, and go to state 145
+    KW_DIV            shift, and go to state 146
+    KW_MOD            shift, and go to state 147
+    KW_OR             shift, and go to state 148
+    OP_PLUS           shift, and go to state 150
+    OP_MINUS          shift, and go to state 151
+    OP_MULT           shift, and go to state 152
+    OP_DIV            shift, and go to state 153
+    CMP_EQUAL         shift, and go to state 154
+    CMP_NOTEQUAL      shift, and go to state 155
+    CMP_LESS          shift, and go to state 156
+    CMP_LESSEQUAL     shift, and go to state 157
+    CMP_GREATER       shift, and go to state 158
+    CMP_GREATEREQUAL  shift, and go to state 159
+    LOG_AND           shift, and go to state 160
+    LOG_OR            shift, and go to state 161
+
+    $default  reduce using rule 123 (repeat_command)
+
+
+State 219
+
+   52 write_string: FUNC_WRSTR DEL_LEFTPAR IDENT DEL_RIGHTPAR .
+
+    $default  reduce using rule 52 (write_string)
+
+
+State 220
+
+   53 write_string: FUNC_WRSTR DEL_LEFTPAR STRING DEL_RIGHTPAR .
+
+    $default  reduce using rule 53 (write_string)
+
+
+State 221
+
+   54 write_string: FUNC_WRSTR DEL_LEFTPAR KW_RESULT DEL_RIGHTPAR .
+
+    $default  reduce using rule 54 (write_string)
+
+
+State 222
+
+   56 write_integer: FUNC_WRINT DEL_LEFTPAR KW_RESULT DEL_RIGHTPAR .
+
+    $default  reduce using rule 56 (write_integer)
+
+
+State 223
+
+   55 write_integer: FUNC_WRINT DEL_LEFTPAR expressions DEL_RIGHTPAR .
+
+    $default  reduce using rule 55 (write_integer)
+
+
+State 224
+
+   58 write_real: FUNC_WRREAL DEL_LEFTPAR KW_RESULT DEL_RIGHTPAR .
+
+    $default  reduce using rule 58 (write_real)
+
+
+State 225
+
+   57 write_real: FUNC_WRREAL DEL_LEFTPAR expressions DEL_RIGHTPAR .
+
+    $default  reduce using rule 57 (write_real)
+
+
+State 226
+
+   20 function_procedure_param: IDENT DEL_COLON IDENT .
+
+    $default  reduce using rule 20 (function_procedure_param)
+
+
+State 227
+
+   18 function_procedure_param: IDENT DEL_COLON KW_ARRAY . array_size_declaration KW_OF basic_data_types
+   19                         | IDENT DEL_COLON KW_ARRAY . KW_OF basic_data_types
+
+    KW_OF        shift, and go to state 245
+    DEL_SQRLEFT  shift, and go to state 183
+
+    array_size_declaration  go to state 246
+
+
+State 228
+
+   17 function_procedure_param: IDENT DEL_COLON basic_data_types .
+
+    $default  reduce using rule 17 (function_procedure_param)
+
+
+State 229
+
+   21 function_procedure_param: function_procedure_param DEL_SEMICOLON IDENT . DEL_COLON basic_data_types
+   22                         | function_procedure_param DEL_SEMICOLON IDENT . DEL_COLON KW_ARRAY array_size_declaration KW_OF basic_data_types
+   23                         | function_procedure_param DEL_SEMICOLON IDENT . DEL_COLON KW_ARRAY KW_OF basic_data_types
+   24                         | function_procedure_param DEL_SEMICOLON IDENT . DEL_COLON IDENT
+
+    DEL_COLON  shift, and go to state 247
+
+
+State 230
+
+   13 function_header: KW_FUNCTION IDENT DEL_LEFTPAR function_procedure_param DEL_RIGHTPAR DEL_COLON . data_types DEL_SEMICOLON
+
+    KW_ARRAY    shift, and go to state 141
+    KW_BOOL     shift, and go to state 118
+    KW_CHAR     shift, and go to state 119
+    KW_INTEGER  shift, and go to state 121
+    KW_REAL     shift, and go to state 122
+
+    basic_data_types  go to state 142
+    data_types        go to state 248
+
+
+State 231
+
+   15 procedure_header: KW_PROCEDURE IDENT DEL_LEFTPAR function_procedure_param DEL_RIGHTPAR DEL_SEMICOLON .
+
+    $default  reduce using rule 15 (procedure_header)
+
+
+State 232
+
+   96 function_complex_commands: KW_BEGIN complex_command_content DEL_SEMICOLON KW_RETURN . KW_END
+  126 return_command: KW_RETURN .
+
+    KW_END  shift, and go to state 249
+
+    $default  reduce using rule 126 (return_command)
+
+
+State 233
+
+   41 typedef_declaration: typedef_declaration IDENT CMP_EQUAL KW_ARRAY KW_OF basic_data_types . DEL_SEMICOLON
+
+    DEL_SEMICOLON  shift, and go to state 250
+
+
+State 234
+
+   35 array_size_declaration: DEL_SQRLEFT POSINT . DEL_SQRRIGHT
+
+    DEL_SQRRIGHT  shift, and go to state 251
+
+
+State 235
+
+   40 typedef_declaration: typedef_declaration IDENT CMP_EQUAL KW_ARRAY array_size_declaration KW_OF . basic_data_types DEL_SEMICOLON
+
+    KW_BOOL     shift, and go to state 118
+    KW_CHAR     shift, and go to state 119
+    KW_INTEGER  shift, and go to state 121
+    KW_REAL     shift, and go to state 122
+
+    basic_data_types  go to state 252
+
+
+State 236
+
+   36 array_size_declaration: array_size_declaration DEL_SQRLEFT . POSINT DEL_SQRRIGHT
+
+    POSINT  shift, and go to state 253
+
+
+State 237
+
+   21 function_procedure_param: function_procedure_param . DEL_SEMICOLON IDENT DEL_COLON basic_data_types
+   22                         | function_procedure_param . DEL_SEMICOLON IDENT DEL_COLON KW_ARRAY array_size_declaration KW_OF basic_data_types
+   23                         | function_procedure_param . DEL_SEMICOLON IDENT DEL_COLON KW_ARRAY KW_OF basic_data_types
+   24                         | function_procedure_param . DEL_SEMICOLON IDENT DEL_COLON IDENT
+   39 typedef_declaration: typedef_declaration IDENT CMP_EQUAL KW_FUNCTION DEL_LEFTPAR function_procedure_param . DEL_RIGHTPAR DEL_COLON basic_data_types DEL_SEMICOLON
+
+    DEL_SEMICOLON  shift, and go to state 178
+    DEL_RIGHTPAR   shift, and go to state 254
+
+
+State 238
+
+   46 variable_declaration: variable_declaration single_plural_ident DEL_COLON KW_ARRAY KW_OF basic_data_types . DEL_SEMICOLON
+
+    DEL_SEMICOLON  shift, and go to state 255
+
+
+State 239
+
+   45 variable_declaration: variable_declaration single_plural_ident DEL_COLON KW_ARRAY array_size_declaration KW_OF . basic_data_types DEL_SEMICOLON
+
+    KW_BOOL     shift, and go to state 118
+    KW_CHAR     shift, and go to state 119
+    KW_INTEGER  shift, and go to state 121
+    KW_REAL     shift, and go to state 122
+
+    basic_data_types  go to state 256
+
+
+State 240
+
+   28 function_procedure_call_params: function_procedure_call_params DEL_COMMA expressions .
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+
+    KW_AND            shift, and go to state 145
+    KW_DIV            shift, and go to state 146
+    KW_MOD            shift, and go to state 147
+    KW_OR             shift, and go to state 148
+    OP_PLUS           shift, and go to state 150
+    OP_MINUS          shift, and go to state 151
+    OP_MULT           shift, and go to state 152
+    OP_DIV            shift, and go to state 153
+    CMP_EQUAL         shift, and go to state 154
+    CMP_NOTEQUAL      shift, and go to state 155
+    CMP_LESS          shift, and go to state 156
+    CMP_LESSEQUAL     shift, and go to state 157
+    CMP_GREATER       shift, and go to state 158
+    CMP_GREATEREQUAL  shift, and go to state 159
+    LOG_AND           shift, and go to state 160
+    LOG_OR            shift, and go to state 161
+
+    $default  reduce using rule 28 (function_procedure_call_params)
+
+
+State 241
+
+  129 array_sqr_content: array_sqr_content DEL_SQRLEFT expressions DEL_SQRRIGHT .
+
+    $default  reduce using rule 129 (array_sqr_content)
+
+
+State 242
+
+  120 for_command: KW_FOR IDENT ASSIGNMENT expressions KW_TO . expressions KW_DO statement_commands_contents
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 257
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 243
+
+  121 for_command: KW_FOR IDENT ASSIGNMENT expressions KW_DOWNTO . expressions KW_DO statement_commands_contents
+
+    IDENT        shift, and go to state 80
+    POSINT       shift, and go to state 81
+    REAL         shift, and go to state 82
+    STRING       shift, and go to state 83
+    KW_NOT       shift, and go to state 84
+    OP_PLUS      shift, and go to state 85
+    OP_MINUS     shift, and go to state 86
+    LOG_NOT      shift, and go to state 87
+    DEL_LEFTPAR  shift, and go to state 88
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    BOOL_TRUE    shift, and go to state 89
+    BOOL_FALSE   shift, and go to state 90
+
+    function_procedure_call  go to state 91
+    read_string              go to state 92
+    read_integer             go to state 93
+    read_real                go to state 94
+    expressions              go to state 258
+    array_expression         go to state 96
+    casting                  go to state 97
+
+
+State 244
+
+   34 data_types: KW_ARRAY KW_OF basic_data_types .
+
+    $default  reduce using rule 34 (data_types)
+
+
+State 245
+
+   19 function_procedure_param: IDENT DEL_COLON KW_ARRAY KW_OF . basic_data_types
+
+    KW_BOOL     shift, and go to state 118
+    KW_CHAR     shift, and go to state 119
+    KW_INTEGER  shift, and go to state 121
+    KW_REAL     shift, and go to state 122
+
+    basic_data_types  go to state 259
+
+
+State 246
+
+   18 function_procedure_param: IDENT DEL_COLON KW_ARRAY array_size_declaration . KW_OF basic_data_types
+   36 array_size_declaration: array_size_declaration . DEL_SQRLEFT POSINT DEL_SQRRIGHT
+
+    KW_OF        shift, and go to state 260
+    DEL_SQRLEFT  shift, and go to state 236
+
+
+State 247
+
+   21 function_procedure_param: function_procedure_param DEL_SEMICOLON IDENT DEL_COLON . basic_data_types
+   22                         | function_procedure_param DEL_SEMICOLON IDENT DEL_COLON . KW_ARRAY array_size_declaration KW_OF basic_data_types
+   23                         | function_procedure_param DEL_SEMICOLON IDENT DEL_COLON . KW_ARRAY KW_OF basic_data_types
+   24                         | function_procedure_param DEL_SEMICOLON IDENT DEL_COLON . IDENT
+
+    IDENT       shift, and go to state 261
+    KW_ARRAY    shift, and go to state 262
+    KW_BOOL     shift, and go to state 118
+    KW_CHAR     shift, and go to state 119
+    KW_INTEGER  shift, and go to state 121
+    KW_REAL     shift, and go to state 122
+
+    basic_data_types  go to state 263
+
+
+State 248
+
+   13 function_header: KW_FUNCTION IDENT DEL_LEFTPAR function_procedure_param DEL_RIGHTPAR DEL_COLON data_types . DEL_SEMICOLON
+
+    DEL_SEMICOLON  shift, and go to state 264
+
+
+State 249
+
+   96 function_complex_commands: KW_BEGIN complex_command_content DEL_SEMICOLON KW_RETURN KW_END .
+
+    $default  reduce using rule 96 (function_complex_commands)
+
+
+State 250
+
+   41 typedef_declaration: typedef_declaration IDENT CMP_EQUAL KW_ARRAY KW_OF basic_data_types DEL_SEMICOLON .
+
+    $default  reduce using rule 41 (typedef_declaration)
+
+
+State 251
+
+   35 array_size_declaration: DEL_SQRLEFT POSINT DEL_SQRRIGHT .
+
+    $default  reduce using rule 35 (array_size_declaration)
+
+
+State 252
+
+   40 typedef_declaration: typedef_declaration IDENT CMP_EQUAL KW_ARRAY array_size_declaration KW_OF basic_data_types . DEL_SEMICOLON
+
+    DEL_SEMICOLON  shift, and go to state 265
+
+
+State 253
+
+   36 array_size_declaration: array_size_declaration DEL_SQRLEFT POSINT . DEL_SQRRIGHT
+
+    DEL_SQRRIGHT  shift, and go to state 266
+
+
+State 254
+
+   39 typedef_declaration: typedef_declaration IDENT CMP_EQUAL KW_FUNCTION DEL_LEFTPAR function_procedure_param DEL_RIGHTPAR . DEL_COLON basic_data_types DEL_SEMICOLON
+
+    DEL_COLON  shift, and go to state 267
+
+
+State 255
+
+   46 variable_declaration: variable_declaration single_plural_ident DEL_COLON KW_ARRAY KW_OF basic_data_types DEL_SEMICOLON .
+
+    $default  reduce using rule 46 (variable_declaration)
+
+
+State 256
+
+   45 variable_declaration: variable_declaration single_plural_ident DEL_COLON KW_ARRAY array_size_declaration KW_OF basic_data_types . DEL_SEMICOLON
+
+    DEL_SEMICOLON  shift, and go to state 268
+
+
+State 257
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+  120 for_command: KW_FOR IDENT ASSIGNMENT expressions KW_TO expressions . KW_DO statement_commands_contents
+
+    KW_AND            shift, and go to state 145
+    KW_DIV            shift, and go to state 146
+    KW_DO             shift, and go to state 269
+    KW_MOD            shift, and go to state 147
+    KW_OR             shift, and go to state 148
+    OP_PLUS           shift, and go to state 150
+    OP_MINUS          shift, and go to state 151
+    OP_MULT           shift, and go to state 152
+    OP_DIV            shift, and go to state 153
+    CMP_EQUAL         shift, and go to state 154
+    CMP_NOTEQUAL      shift, and go to state 155
+    CMP_LESS          shift, and go to state 156
+    CMP_LESSEQUAL     shift, and go to state 157
+    CMP_GREATER       shift, and go to state 158
+    CMP_GREATEREQUAL  shift, and go to state 159
+    LOG_AND           shift, and go to state 160
+    LOG_OR            shift, and go to state 161
+
+
+State 258
+
+   75 expressions: expressions . OP_MULT expressions
+   76            | expressions . OP_DIV expressions
+   77            | expressions . KW_DIV expressions
+   78            | expressions . KW_MOD expressions
+   79            | expressions . OP_PLUS expressions
+   80            | expressions . OP_MINUS expressions
+   81            | expressions . CMP_EQUAL expressions
+   82            | expressions . CMP_NOTEQUAL expressions
+   83            | expressions . CMP_LESS expressions
+   84            | expressions . CMP_LESSEQUAL expressions
+   85            | expressions . CMP_GREATER expressions
+   86            | expressions . CMP_GREATEREQUAL expressions
+   87            | expressions . KW_AND expressions
+   88            | expressions . LOG_AND expressions
+   89            | expressions . KW_OR expressions
+   90            | expressions . LOG_OR expressions
+  121 for_command: KW_FOR IDENT ASSIGNMENT expressions KW_DOWNTO expressions . KW_DO statement_commands_contents
+
+    KW_AND            shift, and go to state 145
+    KW_DIV            shift, and go to state 146
+    KW_DO             shift, and go to state 270
+    KW_MOD            shift, and go to state 147
+    KW_OR             shift, and go to state 148
+    OP_PLUS           shift, and go to state 150
+    OP_MINUS          shift, and go to state 151
+    OP_MULT           shift, and go to state 152
+    OP_DIV            shift, and go to state 153
+    CMP_EQUAL         shift, and go to state 154
+    CMP_NOTEQUAL      shift, and go to state 155
+    CMP_LESS          shift, and go to state 156
+    CMP_LESSEQUAL     shift, and go to state 157
+    CMP_GREATER       shift, and go to state 158
+    CMP_GREATEREQUAL  shift, and go to state 159
+    LOG_AND           shift, and go to state 160
+    LOG_OR            shift, and go to state 161
+
+
+State 259
+
+   19 function_procedure_param: IDENT DEL_COLON KW_ARRAY KW_OF basic_data_types .
+
+    $default  reduce using rule 19 (function_procedure_param)
+
+
+State 260
+
+   18 function_procedure_param: IDENT DEL_COLON KW_ARRAY array_size_declaration KW_OF . basic_data_types
+
+    KW_BOOL     shift, and go to state 118
+    KW_CHAR     shift, and go to state 119
+    KW_INTEGER  shift, and go to state 121
+    KW_REAL     shift, and go to state 122
+
+    basic_data_types  go to state 271
+
+
+State 261
+
+   24 function_procedure_param: function_procedure_param DEL_SEMICOLON IDENT DEL_COLON IDENT .
+
+    $default  reduce using rule 24 (function_procedure_param)
+
+
+State 262
+
+   22 function_procedure_param: function_procedure_param DEL_SEMICOLON IDENT DEL_COLON KW_ARRAY . array_size_declaration KW_OF basic_data_types
+   23                         | function_procedure_param DEL_SEMICOLON IDENT DEL_COLON KW_ARRAY . KW_OF basic_data_types
+
+    KW_OF        shift, and go to state 272
+    DEL_SQRLEFT  shift, and go to state 183
+
+    array_size_declaration  go to state 273
+
+
+State 263
+
+   21 function_procedure_param: function_procedure_param DEL_SEMICOLON IDENT DEL_COLON basic_data_types .
+
+    $default  reduce using rule 21 (function_procedure_param)
+
+
+State 264
+
+   13 function_header: KW_FUNCTION IDENT DEL_LEFTPAR function_procedure_param DEL_RIGHTPAR DEL_COLON data_types DEL_SEMICOLON .
+
+    $default  reduce using rule 13 (function_header)
+
+
+State 265
+
+   40 typedef_declaration: typedef_declaration IDENT CMP_EQUAL KW_ARRAY array_size_declaration KW_OF basic_data_types DEL_SEMICOLON .
+
+    $default  reduce using rule 40 (typedef_declaration)
+
+
+State 266
+
+   36 array_size_declaration: array_size_declaration DEL_SQRLEFT POSINT DEL_SQRRIGHT .
+
+    $default  reduce using rule 36 (array_size_declaration)
+
+
+State 267
+
+   39 typedef_declaration: typedef_declaration IDENT CMP_EQUAL KW_FUNCTION DEL_LEFTPAR function_procedure_param DEL_RIGHTPAR DEL_COLON . basic_data_types DEL_SEMICOLON
+
+    KW_BOOL     shift, and go to state 118
+    KW_CHAR     shift, and go to state 119
+    KW_INTEGER  shift, and go to state 121
+    KW_REAL     shift, and go to state 122
+
+    basic_data_types  go to state 274
+
+
+State 268
+
+   45 variable_declaration: variable_declaration single_plural_ident DEL_COLON KW_ARRAY array_size_declaration KW_OF basic_data_types DEL_SEMICOLON .
+
+    $default  reduce using rule 45 (variable_declaration)
+
+
+State 269
+
+  120 for_command: KW_FOR IDENT ASSIGNMENT expressions KW_TO expressions KW_DO . statement_commands_contents
+
+    IDENT        shift, and go to state 29
+    KW_BEGIN     shift, and go to state 8
+    KW_FOR       shift, and go to state 31
+    KW_GOTO      shift, and go to state 32
+    KW_IF        shift, and go to state 33
+    KW_WHILE     shift, and go to state 34
+    KW_REPEAT    shift, and go to state 35
+    KW_RESULT    shift, and go to state 36
+    KW_RETURN    shift, and go to state 37
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    FUNC_WRSTR   shift, and go to state 42
+    FUNC_WRINT   shift, and go to state 43
+    FUNC_WRREAL  shift, and go to state 44
+
+    function_procedure_call      go to state 45
+    read_string                  go to state 46
+    read_integer                 go to state 47
+    read_real                    go to state 48
+    write_string                 go to state 49
+    write_integer                go to state 50
+    write_real                   go to state 51
+    complex_commands             go to state 99
+    distinct_commands            go to state 100
+    statement_commands_contents  go to state 275
+    assignment_command           go to state 53
+    result_command               go to state 54
+    if_command                   go to state 55
+    for_command                  go to state 56
+    while_command                go to state 57
+    repeat_command               go to state 58
+    label_command                go to state 59
+    goto_command                 go to state 60
+    return_command               go to state 61
+
+
+State 270
+
+  121 for_command: KW_FOR IDENT ASSIGNMENT expressions KW_DOWNTO expressions KW_DO . statement_commands_contents
+
+    IDENT        shift, and go to state 29
+    KW_BEGIN     shift, and go to state 8
+    KW_FOR       shift, and go to state 31
+    KW_GOTO      shift, and go to state 32
+    KW_IF        shift, and go to state 33
+    KW_WHILE     shift, and go to state 34
+    KW_REPEAT    shift, and go to state 35
+    KW_RESULT    shift, and go to state 36
+    KW_RETURN    shift, and go to state 37
+    FUNC_RDSTR   shift, and go to state 39
+    FUNC_RDINT   shift, and go to state 40
+    FUNC_RDREAL  shift, and go to state 41
+    FUNC_WRSTR   shift, and go to state 42
+    FUNC_WRINT   shift, and go to state 43
+    FUNC_WRREAL  shift, and go to state 44
+
+    function_procedure_call      go to state 45
+    read_string                  go to state 46
+    read_integer                 go to state 47
+    read_real                    go to state 48
+    write_string                 go to state 49
+    write_integer                go to state 50
+    write_real                   go to state 51
+    complex_commands             go to state 99
+    distinct_commands            go to state 100
+    statement_commands_contents  go to state 276
+    assignment_command           go to state 53
+    result_command               go to state 54
+    if_command                   go to state 55
+    for_command                  go to state 56
+    while_command                go to state 57
+    repeat_command               go to state 58
+    label_command                go to state 59
+    goto_command                 go to state 60
+    return_command               go to state 61
+
+
+State 271
+
+   18 function_procedure_param: IDENT DEL_COLON KW_ARRAY array_size_declaration KW_OF basic_data_types .
+
+    $default  reduce using rule 18 (function_procedure_param)
+
+
+State 272
+
+   23 function_procedure_param: function_procedure_param DEL_SEMICOLON IDENT DEL_COLON KW_ARRAY KW_OF . basic_data_types
+
+    KW_BOOL     shift, and go to state 118
+    KW_CHAR     shift, and go to state 119
+    KW_INTEGER  shift, and go to state 121
+    KW_REAL     shift, and go to state 122
+
+    basic_data_types  go to state 277
+
+
+State 273
+
+   22 function_procedure_param: function_procedure_param DEL_SEMICOLON IDENT DEL_COLON KW_ARRAY array_size_declaration . KW_OF basic_data_types
+   36 array_size_declaration: array_size_declaration . DEL_SQRLEFT POSINT DEL_SQRRIGHT
+
+    KW_OF        shift, and go to state 278
+    DEL_SQRLEFT  shift, and go to state 236
+
+
+State 274
+
+   39 typedef_declaration: typedef_declaration IDENT CMP_EQUAL KW_FUNCTION DEL_LEFTPAR function_procedure_param DEL_RIGHTPAR DEL_COLON basic_data_types . DEL_SEMICOLON
+
+    DEL_SEMICOLON  shift, and go to state 279
+
+
+State 275
+
+  120 for_command: KW_FOR IDENT ASSIGNMENT expressions KW_TO expressions KW_DO statement_commands_contents .
+
+    $default  reduce using rule 120 (for_command)
+
+
+State 276
+
+  121 for_command: KW_FOR IDENT ASSIGNMENT expressions KW_DOWNTO expressions KW_DO statement_commands_contents .
+
+    $default  reduce using rule 121 (for_command)
+
+
+State 277
+
+   23 function_procedure_param: function_procedure_param DEL_SEMICOLON IDENT DEL_COLON KW_ARRAY KW_OF basic_data_types .
+
+    $default  reduce using rule 23 (function_procedure_param)
+
+
+State 278
+
+   22 function_procedure_param: function_procedure_param DEL_SEMICOLON IDENT DEL_COLON KW_ARRAY array_size_declaration KW_OF . basic_data_types
+
+    KW_BOOL     shift, and go to state 118
+    KW_CHAR     shift, and go to state 119
+    KW_INTEGER  shift, and go to state 121
+    KW_REAL     shift, and go to state 122
+
+    basic_data_types  go to state 280
+
+
+State 279
+
+   39 typedef_declaration: typedef_declaration IDENT CMP_EQUAL KW_FUNCTION DEL_LEFTPAR function_procedure_param DEL_RIGHTPAR DEL_COLON basic_data_types DEL_SEMICOLON .
+
+    $default  reduce using rule 39 (typedef_declaration)
+
+
+State 280
+
+   22 function_procedure_param: function_procedure_param DEL_SEMICOLON IDENT DEL_COLON KW_ARRAY array_size_declaration KW_OF basic_data_types .
+
+    $default  reduce using rule 22 (function_procedure_param)

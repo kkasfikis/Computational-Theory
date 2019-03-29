@@ -1,0 +1,68 @@
+program lalala;
+	var n	: array[10] of integer;
+	    i,j	: integer;
+function lalala1(y : array[10][5] of char; x : array of char):integer;
+begin
+	result := 5;
+	return
+end; 
+
+
+procedure printrepeat();
+var i : integer;
+begin	
+     i:=0;	
+     repeat 
+	begin
+ 	i:=i+1;
+	writeString("\nThis is repeat")
+	end
+     until 
+        i<5
+end;
+
+procedure printgoto();
+var i: integer;
+begin
+   i:=0;
+   Loop:
+   	i:=i+2;
+	writeString("\nRepeat procedure going on")
+
+   	if i=12 then 
+	   goto EndLoop
+	else   
+        	goto Loop
+	EndLoop:
+	writeString("\nEnd Repeat")
+end;
+
+
+
+
+	
+begin
+   	  for i:=0 to 10 do 
+	    n[i] := i + 100 ;	
+	  for j:= 0 to 10 do
+	  begin
+	     	writeString("Element ");
+	    	writeInteger(j);
+	    	writeString('=')
+	    	writeInteger(n[j])	
+	    	writeString('\n')
+	    
+	  end;
+
+
+printrepeat();
+printgoto()
+
+
+	
+end.
+
+
+
+
+
